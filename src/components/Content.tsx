@@ -8,17 +8,33 @@ import Kind30003 from "./Kind30003";
 import { JSXElement, createSignal } from "solid-js";
 import SelectedContent from "./SelectedContent";
 import NDK, { NDKEvent, NDKNip07Signer, NDKUser } from "@nostr-dev-kit/ndk";
-import { getUserRelayList, getBookmarkEventList } from "../libs/nostrFunctions";
+import {
+  getUserRelayList,
+  getBookmarkEventList,
+  BookmarkEventList,
+} from "../libs/nostrFunctions";
 
+//てすとよう
+import bookmarks from "../test/sortedBookmarks.json"; // JSONファイルを読み込む
 const nip07signer = new NDKNip07Signer();
 
 export function Content(): JSXElement {
   const [pubkey, setPubkey] = createSignal("");
   const [userRelays, setUserRelays] = createStore();
 
-  const [bkmEvents, setBkmEvents] = createStore();
+  const [bkmEvents, setBkmEvents] = createStore<BookmarkEventList>({
+    kind10003: [],
+    kind30001: {},
+    kind30003: {},
+  });
   const [selectedEventNum, setSelectedEventNum] = createSignal();
   let user: NDKUser;
+  //---------------------------------------------------------------------------
+  // てすとよう
+  //ファイルを同期で読み込む
+
+  setBkmEvents(bookmarks);
+
   //---------------------------------------------------------------------------
   const handleChange = (e: Event) => {
     setPubkey((e.target as HTMLInputElement).value);
@@ -61,9 +77,9 @@ export function Content(): JSXElement {
         />
         <div>{pubkey()}</div>
         <Bookemarks>
-          <Kind10003 />
-          <Kind30003 />
-          <Kind30001 />
+          <Kind10003 bookmarks={bkmEvents} />
+          <Kind30003 bookmarks={bkmEvents} />
+          <Kind30001 bookmarks={bkmEvents} />
         </Bookemarks>
         <SelectedContent selectedEventNum={selectedEventNum} />
       </Container>

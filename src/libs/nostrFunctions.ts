@@ -20,8 +20,10 @@ interface RelayList {
   read: string[];
   write: string[];
 }
-
-interface BookmarkEventList {
+export interface Props {
+  bookmarks: BookmarkEventList;
+}
+export interface BookmarkEventList {
   kind10003: NostrEvent[];
   kind30003: { [id: string]: NostrEvent[] };
   kind30001: { [id: string]: NostrEvent[] };
@@ -195,6 +197,39 @@ export const getBookmarkEventList = async (
       until: now(),
     }); // 購読し始めてからイベントを受信するためにemitは後
   });
-
+  //時間順に並べ替えてから返す
+  res = sortBookmarkEventList(res);
   return res;
 };
+
+export function sortBookmarkEventList(
+  bookmarkEventList: BookmarkEventList
+): BookmarkEventList {
+  const sortedBookmarkEventList: BookmarkEventList = {
+    kind10003: sortEventsByCreatedAt(bookmarkEventList.kind10003),
+    kind30003: {},
+    kind30001: {},
+  };
+
+  // kind30003の各配列をcreated_atの値で並べ替える
+  Object.keys(bookmarkEventList.kind30003).forEach((id) => {
+    sortedBookmarkEventList.kind30003[id] = sortEventsByCreatedAt(
+      bookmarkEventList.kind30003[id]
+    );
+  });
+
+  // kind30001の各配列をcreated_atの値で並べ替える
+  Object.keys(bookmarkEventList.kind30001).forEach((id) => {
+    sortedBookmarkEventList.kind30001[id] = sortEventsByCreatedAt(
+      bookmarkEventList.kind30001[id]
+    );
+  });
+
+  return sortedBookmarkEventList;
+}
+
+function sortEventsByCreatedAt(events: NostrEvent[]): NostrEvent[] {
+  return events.sort((a, b) => {
+    return b.created_at - a.created_at;
+  });
+}
