@@ -74,7 +74,7 @@ export default function Kind30001(props: BkmProps) {
                 </div>
               </Box>
             )}
-          </For>{" "}
+          </For>
         </RadioGroup>
       </FormControl>
     </div>

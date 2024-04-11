@@ -22,13 +22,13 @@ export default function JsonModal(props: {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: "80vw", // 画面の幅の90%を使う
-          height: "80vh", // 画面の高さの90%を使う
+          height: "70vh", // 画面の高さの90%を使う
           bgcolor: theme.palette.background.paper,
           border: "2px solid #000",
           boxShadow: "24px",
           p: 4,
           maxWidth: "80vw",
-          maxHeight: "80vh",
+          maxHeight: "70vh",
         }}
       >
         <Grid container spacing={2} sx={{ height: "100%" }}>

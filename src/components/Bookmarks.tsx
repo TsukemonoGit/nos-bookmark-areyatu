@@ -41,7 +41,9 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
     setClickedEvent(nosEvent);
     setModalOpen(true);
   };
-
+  const handleClickPublish = (nosEvent: NostrEvent) => {
+    console.log(nosEvent);
+  };
   return (
     <>
       <h3>The total number of bookmarks found for each type</h3>
@@ -93,6 +95,7 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
               bookmarks={bookmarks}
               onSelect={onSelect}
               handleClickEvent={handleClickEvent}
+              handleClickPublish={handleClickPublish}
             />
           </Match>
           <Match when={selectedTab() === "kind30003"}>
@@ -100,6 +103,7 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
               bookmarks={bookmarks}
               onSelect={onSelect}
               handleClickEvent={handleClickEvent}
+              handleClickPublish={handleClickPublish}
             />
           </Match>
           <Match when={selectedTab() === "kind30001"}>
@@ -107,6 +111,7 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
               bookmarks={bookmarks}
               onSelect={onSelect}
               handleClickEvent={handleClickEvent}
+              handleClickPublish={handleClickPublish}
             />
           </Match>
         </Switch>

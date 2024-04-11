@@ -24,6 +24,7 @@ export interface BkmProps {
   bookmarks: BookmarkEventList;
   onSelect: any;
   handleClickEvent: any;
+  handleClickPublish: any;
 }
 export interface BookmarkEventList {
   kind10003: NostrEvent[];

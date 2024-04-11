@@ -14,6 +14,7 @@ import {
 } from "@suid/material";
 import { NostrEvent } from "@nostr-dev-kit/ndk";
 import JsonModal from "./JsonModal";
+import EventItem from "./EventItem";
 
 export default function Kind10003(props: BkmProps) {
   const handleChange = (_event: any, value: string): void => {
@@ -42,21 +43,14 @@ export default function Kind10003(props: BkmProps) {
             onChange={handleChange}
           >
             <For each={props.bookmarks.kind10003}>
-              {(event, index) => (
+              {(nosevent, index) => (
                 <div>
-                  <FormControlLabel
-                    value={index()}
-                    control={<Radio />}
-                    label={new Date(event.created_at * 1000).toLocaleString()}
+                  <EventItem
+                    nosEvent={nosevent}
+                    handleClickEvent={props.handleClickEvent}
+                    handleClickPublish={props.handleClickPublish}
+                    value={index().toString()}
                   />
-                  <div>
-                    tags.length:
-                    {event.tags.length},content.length:
-                    {event.content.length}
-                  </div>
-                  <Button onClick={() => props.handleClickEvent(event)}>
-                    もっとみる
-                  </Button>
                   <Show when={props.bookmarks.kind10003.length > index() + 1}>
                     <Divider />
                   </Show>
