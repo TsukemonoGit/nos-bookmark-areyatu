@@ -1,0 +1,74 @@
+{
+  "content": "",
+  "created_at": 1710633094,
+  "id": "7faedb553c629ac85d10dec46e94e4c9f3d859e41c47dfd61d2eb2dd0d1c2398",
+  "kind": 10002,
+  "pubkey": "84b0c46ab699ac35eb2ca286470b85e081db2087cdef63932236c397417782f5",
+  "sig": "f6b12c40c15eb1c7e30de56959fdf1be5ef09390c10365b48bfcf7f4ebab9a066529b324cbef101d308447433a26dda8d0a204469ad8c6f6d3aa9e9bbb81e5ac",
+  "tags": [
+    [
+      "r",
+      "wss://relay.mostr.pub/",
+      "read"
+    ],
+    [
+      "r",
+      "wss://nostr.zbd.gg/",
+      "read"
+    ],
+    [
+      "r",
+      "wss://relay-jp.nostr.wirednet.jp/"
+    ],
+    [
+      "r",
+      "wss://yabu.me/"
+    ],
+    [
+      "r",
+      "wss://nos.lol/",
+      "write"
+    ],
+    [
+      "r",
+      "wss://relay-jp.nostr.moctane.com/"
+    ],
+    [
+      "r",
+      "wss://relay.nostr.wirednet.jp/"
+    ],
+    [
+      "r",
+      "wss://r.kojira.io/"
+    ],
+    [
+      "r",
+      "wss://nostr.fediverse.jp/",
+      "write"
+    ],
+    [
+      "r",
+      "wss://srtrelay.c-stellar.net/"
+    ],
+    [
+      "r",
+      "wss://nrelay-jp.c-stellar.net/",
+      "write"
+    ],
+    [
+      "r",
+      "wss://relayable.org/",
+      "read"
+    ],
+    [
+      "r",
+      "wss://relay.nostr.band/",
+      "read"
+    ],
+    [
+      "r",
+      "wss://nostr.wine/",
+      "read"
+    ]
+  ]
+}

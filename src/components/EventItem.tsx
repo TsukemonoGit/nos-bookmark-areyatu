@@ -1,5 +1,5 @@
 import { NostrEvent } from "@nostr-dev-kit/ndk";
-import { Grid } from "@suid/material";
+import { Grid, Typography } from "@suid/material";
 import Button from "@suid/material/Button";
 import { EventPacket } from "rx-nostr";
 
@@ -23,7 +23,14 @@ export default function EventItem(props: {
         </Button>
       </Grid>
       <Grid item>
-        {new Date(nosEvent.event.created_at * 1000).toLocaleString()}
+        <Typography
+          variant="subtitle2"
+          gutterBottom
+          component="div"
+          sx={{ fontSize: 20 }}
+        >
+          {new Date(nosEvent.event.created_at * 1000).toLocaleString()}
+        </Typography>
 
         <Grid item>
           tags.length: {nosEvent?.event.tags?.length}, content.length:

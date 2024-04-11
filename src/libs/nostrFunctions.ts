@@ -245,9 +245,9 @@ export async function publishEventToRelay(
   if (nsec !== undefined) {
     event.pubkey = getPublicKey(nsec);
   }
-  const rxNostr = createRxNostr({
-    signer: nsec !== undefined ? seckeySigner(nsecEncode(nsec)) : nip07Signer(),
-  });
+  // const rxNostr = createRxNostr({
+  //   signer: nsec !== undefined ? seckeySigner(nsecEncode(nsec)) : nip07Signer(),
+  // });
   // const rxNostr =
   //   nsec !== undefined
   //     ? createRxNostr({

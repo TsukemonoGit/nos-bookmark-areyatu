@@ -1,4 +1,12 @@
-import { Modal, Box, Grid, useTheme, Button, Link } from "@suid/material";
+import {
+  Modal,
+  Box,
+  Grid,
+  useTheme,
+  Button,
+  Link,
+  Typography,
+} from "@suid/material";
 import { EventPacket } from "rx-nostr";
 import { neventEncode } from "../../libs/nip19";
 
@@ -42,11 +50,18 @@ export default function JsonModal(props: {
           p: 4,
           maxWidth: "80vw",
           maxHeight: "70vh",
+          borderRadius: 2,
         }}
       >
         <Grid container spacing={2} sx={{ height: "100%" }}>
           <Grid item>
-            <b>EventJson</b>
+            <Typography
+              variant="h4"
+              component="div"
+              sx={{ placeSelf: "start" }}
+            >
+              EventJson
+            </Typography>
           </Grid>
           <Grid
             item

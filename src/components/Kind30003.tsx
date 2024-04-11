@@ -10,6 +10,7 @@ import {
   Radio,
   RadioGroup,
   Theme,
+  Typography,
 } from "@suid/material";
 import EventItem from "./EventItem";
 
@@ -19,53 +20,68 @@ export default function Kind30003(props: BkmProps) {
     console.log("value:", value);
   };
   return (
-    <div>
-      <div>kind:30003</div>
-      <FormControl
+    <>
+      <RadioGroup
+        aria-labelledby="demo-radio-buttons-group-label"
+        name="radio-buttons-group"
+        onChange={handleChange}
         sx={{
-          p: 1,
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          "& > *": {
+            m: 1,
+          },
         }}
       >
-        <RadioGroup
-          aria-labelledby="demo-radio-buttons-group-label"
-          name="radio-buttons-group"
-          onChange={handleChange}
-        >
-          <For each={Object.keys(props.bookmarks.kind30003)}>
-            {(id, i) => (
-              <Box
-                sx={{
-                  p: 1,
-                  border: 1,
-                  borderColor: (theme: Theme) => theme.palette.primary.main,
-                }}
-              >
-                <div>ID:{id}</div>
+        <For each={Object.keys(props.bookmarks.kind30003)}>
+          {(id, i) => (
+            <Box
+              sx={{
+                width: "80%",
+                m: 2,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                "& > *": {
+                  m: 1,
+                },
 
-                <For each={props.bookmarks.kind30003[id]}>
-                  {(nosevent, index) => (
-                    <div>
-                      <EventItem
-                        nosEvent={nosevent}
-                        handleClickEvent={props.handleClickEvent}
-                        handleClickPublish={props.handleClickPublish}
-                        value={index().toString()}
-                      />
-                      <Show
-                        when={
-                          props.bookmarks.kind30003[id].length > index() + 1
-                        }
-                      >
-                        <Divider />
-                      </Show>
-                    </div>
-                  )}
-                </For>
-              </Box>
-            )}
-          </For>{" "}
-        </RadioGroup>{" "}
-      </FormControl>
-    </div>
+                border: 1,
+                borderColor: (theme: Theme) => theme.palette.primary.main,
+              }}
+            >
+              <Typography
+                variant="h6"
+                gutterBottom
+                component="div"
+                sx={{ placeSelf: "start", m: 2 }}
+              >
+                ID:{id}
+              </Typography>
+
+              <For each={props.bookmarks.kind30003[id]}>
+                {(nosevent, index) => (
+                  <div>
+                    <EventItem
+                      nosEvent={nosevent}
+                      handleClickEvent={props.handleClickEvent}
+                      handleClickPublish={props.handleClickPublish}
+                      value={index().toString()}
+                    />
+                    <Show
+                      when={props.bookmarks.kind30003[id].length > index() + 1}
+                    >
+                      <Divider />
+                    </Show>
+                  </div>
+                )}
+              </For>
+            </Box>
+          )}
+        </For>{" "}
+      </RadioGroup>{" "}
+    </>
   );
 }

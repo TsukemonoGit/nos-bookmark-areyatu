@@ -7,6 +7,7 @@ import Kind30003 from "./Kind30003";
 import JsonModal from "./Modals/JsonModal";
 import { NostrEvent } from "@nostr-dev-kit/ndk";
 import { EventPacket } from "rx-nostr";
+import BkmBox from "./BkmBox";
 
 interface Props {
   bookmarks: BookmarkEventList;
@@ -87,25 +88,33 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
       >
         <Switch fallback={<div>Not Found</div>}>
           <Match when={selectedTab() === "kind10003"}>
-            <Kind10003
-              bookmarks={bookmarks}
-              handleClickEvent={handleClickEvent}
-              handleClickPublish={handleClickPublish}
-            />
+            <BkmBox kind="10003">
+              <Kind10003
+                bookmarks={bookmarks}
+                handleClickEvent={handleClickEvent}
+                handleClickPublish={handleClickPublish}
+              />
+            </BkmBox>
           </Match>
           <Match when={selectedTab() === "kind30003"}>
-            <Kind30003
-              bookmarks={bookmarks}
-              handleClickEvent={handleClickEvent}
-              handleClickPublish={handleClickPublish}
-            />
+            <BkmBox kind="30003">
+              {" "}
+              <Kind30003
+                bookmarks={bookmarks}
+                handleClickEvent={handleClickEvent}
+                handleClickPublish={handleClickPublish}
+              />
+            </BkmBox>
           </Match>
           <Match when={selectedTab() === "kind30001"}>
-            <Kind30001
-              bookmarks={bookmarks}
-              handleClickEvent={handleClickEvent}
-              handleClickPublish={handleClickPublish}
-            />
+            <BkmBox kind="30001">
+              {" "}
+              <Kind30001
+                bookmarks={bookmarks}
+                handleClickEvent={handleClickEvent}
+                handleClickPublish={handleClickPublish}
+              />
+            </BkmBox>
           </Match>
         </Switch>
       </Box>

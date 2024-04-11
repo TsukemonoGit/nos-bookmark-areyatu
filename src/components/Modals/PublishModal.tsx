@@ -43,6 +43,7 @@ export default function PublishModal(props: {
           p: 4,
           maxWidth: "80vw",
           maxHeight: "70vh",
+          borderRadius: 2,
         }}
       >
         <Grid container spacing={2} sx={{ height: "100%" }}>
@@ -59,6 +60,8 @@ export default function PublishModal(props: {
               overflowY: "auto",
               fontSize: "small",
               border: 1,
+              width: "100%",
+              m: 2,
             }}
           >
             {JSON.stringify(props.nosEvent(), null, 2)}

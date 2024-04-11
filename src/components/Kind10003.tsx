@@ -3,6 +3,7 @@ import { BookmarkEventList, BkmProps } from "../libs/nostrFunctions";
 import {
   Box,
   Button,
+  Container,
   Divider,
   FormControl,
   FormControlLabel,
@@ -23,43 +24,28 @@ export default function Kind10003(props: BkmProps) {
   };
 
   return (
-    <div>
-      <div>kind:10003</div>
-      <Box
-        sx={{
-          p: 1,
-          border: 1,
-          borderColor: (theme: Theme) => theme.palette.primary.main,
-        }}
+    <>
+      <RadioGroup
+        aria-labelledby="demo-radio-buttons-group-label"
+        name="radio-buttons-group"
+        onChange={handleChange}
       >
-        <FormControl
-          sx={{
-            p: 1,
-          }}
-        >
-          <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            name="radio-buttons-group"
-            onChange={handleChange}
-          >
-            <For each={props.bookmarks.kind10003}>
-              {(nosevent, index) => (
-                <div>
-                  <EventItem
-                    nosEvent={nosevent}
-                    handleClickEvent={props.handleClickEvent}
-                    handleClickPublish={props.handleClickPublish}
-                    value={index().toString()}
-                  />
-                  <Show when={props.bookmarks.kind10003.length > index() + 1}>
-                    <Divider />
-                  </Show>
-                </div>
-              )}
-            </For>
-          </RadioGroup>
-        </FormControl>
-      </Box>
-    </div>
+        <For each={props.bookmarks.kind10003}>
+          {(nosevent, index) => (
+            <div>
+              <EventItem
+                nosEvent={nosevent}
+                handleClickEvent={props.handleClickEvent}
+                handleClickPublish={props.handleClickPublish}
+                value={index().toString()}
+              />
+              <Show when={props.bookmarks.kind10003.length > index() + 1}>
+                <Divider />
+              </Show>
+            </div>
+          )}
+        </For>
+      </RadioGroup>
+    </>
   );
 }
