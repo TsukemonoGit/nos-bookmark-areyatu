@@ -20,7 +20,8 @@ export default function BkmBox({ kind, children }: BkmBoxProps) {
       <Box
         sx={{
           margin: 2,
-          width: "80%",
+          width: "600px",
+          maxWidth: "100%",
           p: 1,
           border: 1,
           borderColor: (theme: Theme) => theme.palette.primary.main,

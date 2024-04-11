@@ -40,8 +40,9 @@ export default function Kind30001(props: BkmProps) {
           {(id, i) => (
             <Box
               sx={{
-                width: "80%",
-                m: 2,
+                width: "95%",
+
+                my: 1,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
