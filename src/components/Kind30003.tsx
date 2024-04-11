@@ -11,6 +11,7 @@ import {
   RadioGroup,
   Theme,
 } from "@suid/material";
+import EventItem from "./EventItem";
 
 export default function Kind30003(props: BkmProps) {
   const handleChange = (_event: any, value: string): void => {
@@ -39,26 +40,17 @@ export default function Kind30003(props: BkmProps) {
                   borderColor: (theme: Theme) => theme.palette.primary.main,
                 }}
               >
-                <div>{id}</div>
+                <div>ID:{id}</div>
 
                 <For each={props.bookmarks.kind30003[id]}>
-                  {(event, index) => (
+                  {(nosevent, index) => (
                     <div>
-                      <FormControlLabel
-                        value={id + index()}
-                        control={<Radio />}
-                        label={new Date(
-                          event.created_at * 1000
-                        ).toLocaleString()}
+                      <EventItem
+                        nosEvent={nosevent}
+                        handleClickEvent={props.handleClickEvent}
+                        handleClickPublish={props.handleClickPublish}
+                        value={index().toString()}
                       />
-                      <div>
-                        tags.length:
-                        {event.tags.length},content.length:
-                        {event.content.length}
-                      </div>
-                      <Button onClick={() => props.handleClickEvent(event)}>
-                        もっとみる
-                      </Button>
                       <Show
                         when={
                           props.bookmarks.kind30003[id].length > index() + 1

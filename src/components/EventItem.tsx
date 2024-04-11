@@ -1,4 +1,5 @@
 import { NostrEvent } from "@nostr-dev-kit/ndk";
+import { Grid } from "@suid/material";
 import Button from "@suid/material/Button";
 
 export default function EventItem(props: {
@@ -10,13 +11,36 @@ export default function EventItem(props: {
   const { nosEvent, handleClickEvent, handleClickPublish } = props;
 
   return (
-    <div>
-      <Button onClick={() => handleClickPublish(nosEvent)}>書き込む</Button>
-      <div>
-        tags.length: {nosEvent?.tags?.length}, content.length:{" "}
-        {nosEvent?.content?.length}
-      </div>
-      <Button onClick={() => handleClickEvent(nosEvent)}>もっとみる</Button>
-    </div>
+    <Grid container spacing={1} sx={{ my: 0.1 }}>
+      <Grid item>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => handleClickPublish(nosEvent)}
+        >
+          Publish
+        </Button>
+      </Grid>
+      <Grid item>
+        {new Date(nosEvent.created_at * 1000).toLocaleString()}
+
+        <Grid item>
+          tags.length: {nosEvent?.tags?.length}, content.length:
+          {nosEvent?.content?.length}
+        </Grid>
+        <Grid item>
+          <Button
+            sx={{
+              placeContent: "end",
+
+              width: "100%",
+            }}
+            onClick={() => handleClickEvent(nosEvent)}
+          >
+            もっとみる
+          </Button>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 }

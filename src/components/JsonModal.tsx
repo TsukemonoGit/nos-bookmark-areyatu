@@ -42,7 +42,7 @@ export default function JsonModal(props: {
               wordBreak: "break-word",
 
               height: "100%",
-              py: "1rem",
+              py: 1,
               overflowY: "auto",
             }}
           >
