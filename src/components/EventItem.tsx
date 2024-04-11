@@ -15,7 +15,7 @@ export default function EventItem(props: {
       <Grid item>
         <Button
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={() => handleClickPublish(nosEvent)}
         >
           Publish

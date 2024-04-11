@@ -1,6 +1,6 @@
 import { JSXElement, Match, Switch, createSignal } from "solid-js";
 import { BkmProps, BookmarkEventList } from "../libs/nostrFunctions";
-import { Box, Button, ButtonGroup } from "@suid/material";
+import { Box, ToggleButton, ToggleButtonGroup } from "@suid/material";
 import Kind10003 from "./Kind10003";
 import Kind30001 from "./Kind30001";
 import Kind30003 from "./Kind30003";
@@ -15,7 +15,6 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
   const [selectedTab, setSelectedTab] = createSignal("kind10003");
   const [modalOpen, setModalOpen] = createSignal(false);
   const [clickedEvent, setClickedEvent] = createSignal<NostrEvent | null>(null);
-
   const handleTabChange = (tabName: string) => {
     setSelectedTab(tabName);
   };
@@ -62,17 +61,18 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
           },
         }}
       >
-        <ButtonGroup variant="outlined" aria-label="outlined button group">
-          <Button onClick={() => handleTabChange("kind10003")}>
-            kind10003
-          </Button>
-          <Button onClick={() => handleTabChange("kind30003")}>
-            kind30003
-          </Button>
-          <Button onClick={() => handleTabChange("kind30001")}>
-            kind30001
-          </Button>
-        </ButtonGroup>
+        <ToggleButtonGroup
+          color="primary"
+          value={selectedTab()}
+          exclusive
+          onChange={(event, newAlignment) => {
+            handleTabChange(newAlignment);
+          }}
+        >
+          <ToggleButton value="kind10003">kind10003</ToggleButton>
+          <ToggleButton value="kind30003">kind30003</ToggleButton>
+          <ToggleButton value="kind30001">kind30001</ToggleButton>
+        </ToggleButtonGroup>
         {/* <ButtonGroup variant="text" aria-label="text button group">
           <Button>One</Button>
           <Button>Two</Button>
