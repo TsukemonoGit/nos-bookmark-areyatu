@@ -76,7 +76,7 @@ export function Content(): JSXElement {
           getPubkey={handleGetPubkey}
         />
         <div>{pubkey()}</div>
-        <Bookemarks>
+        <Bookemarks bookmarks={bkmEvents}>
           <Kind10003 bookmarks={bkmEvents} />
           <Kind30003 bookmarks={bkmEvents} />
           <Kind30001 bookmarks={bkmEvents} />
