@@ -2,20 +2,23 @@ import { Container } from "@suid/material";
 import { createStore } from "solid-js/store";
 import SetPubkey from "./SetPubkey";
 import Bookemarks from "./Bookmarks";
-import Kind10003 from "./Kind10003";
-import Kind30001 from "./Kind30001";
-import Kind30003 from "./Kind30003";
 import { JSXElement, createSignal } from "solid-js";
 import SelectedContent from "./SelectedContent";
-import NDK, { NDKEvent, NDKNip07Signer, NDKUser } from "@nostr-dev-kit/ndk";
+import NDK, {
+  NDKEvent,
+  NDKNip07Signer,
+  NDKUser,
+  NostrEvent,
+} from "@nostr-dev-kit/ndk";
 import {
   getUserRelayList,
   getBookmarkEventList,
   BookmarkEventList,
 } from "../libs/nostrFunctions";
-
+//---------------------------------------------------------------------------
 //てすとよう
 import bookmarks from "../test/sortedBookmarks.json"; // JSONファイルを読み込む
+//---------------------------------------------------------------------------
 const nip07signer = new NDKNip07Signer();
 
 export function Content(): JSXElement {
@@ -27,7 +30,7 @@ export function Content(): JSXElement {
     kind30001: {},
     kind30003: {},
   });
-  const [selectedEventNum, setSelectedEventNum] = createSignal();
+  const [selectedEvent, setSelectedEvent] = createSignal();
   let user: NDKUser;
   //---------------------------------------------------------------------------
   // てすとよう
@@ -65,6 +68,9 @@ export function Content(): JSXElement {
     }
   };
 
+  const handleSelect = (e: NostrEvent) => {
+    setSelectedEvent(e);
+  };
   //------------------------------------------------------------
   return (
     <main>
@@ -76,12 +82,9 @@ export function Content(): JSXElement {
           getPubkey={handleGetPubkey}
         />
         <div>{pubkey()}</div>
-        <Bookemarks bookmarks={bkmEvents}>
-          <Kind10003 bookmarks={bkmEvents} />
-          <Kind30003 bookmarks={bkmEvents} />
-          <Kind30001 bookmarks={bkmEvents} />
-        </Bookemarks>
-        <SelectedContent selectedEventNum={selectedEventNum} />
+        <Bookemarks bookmarks={bkmEvents} onSelect={handleSelect} />
+
+        <SelectedContent selectedEvent={selectedEvent} />
       </Container>
     </main>
   );

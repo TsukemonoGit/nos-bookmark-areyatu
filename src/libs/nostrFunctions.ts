@@ -20,8 +20,10 @@ interface RelayList {
   read: string[];
   write: string[];
 }
-export interface Props {
+export interface BkmProps {
   bookmarks: BookmarkEventList;
+  onSelect: any;
+  handleClickEvent: any;
 }
 export interface BookmarkEventList {
   kind10003: NostrEvent[];

@@ -1,12 +1,20 @@
 import { JSXElement, Match, Switch, createSignal } from "solid-js";
-import { BookmarkEventList, Props } from "../libs/nostrFunctions";
+import { BkmProps, BookmarkEventList } from "../libs/nostrFunctions";
 import { Box, Button, ButtonGroup } from "@suid/material";
 import Kind10003 from "./Kind10003";
 import Kind30001 from "./Kind30001";
 import Kind30003 from "./Kind30003";
+import JsonModal from "./JsonModal";
+import { NostrEvent } from "@nostr-dev-kit/ndk";
 
-export default function Bookemarks({ bookmarks }: Props) {
+interface Props {
+  bookmarks: BookmarkEventList;
+  onSelect: any;
+}
+export default function Bookemarks({ bookmarks, onSelect }: Props) {
   const [selectedTab, setSelectedTab] = createSignal("kind10003");
+  const [modalOpen, setModalOpen] = createSignal(false);
+  const [clickedEvent, setClickedEvent] = createSignal<NostrEvent | null>(null);
 
   const handleTabChange = (tabName: string) => {
     setSelectedTab(tabName);
@@ -23,6 +31,17 @@ export default function Bookemarks({ bookmarks }: Props) {
     (acc, curr) => acc + curr.length,
     0
   );
+
+  const handleModalClose = () => {
+    setClickedEvent(null);
+    setModalOpen(false);
+  };
+
+  const handleClickEvent = (nosEvent: NostrEvent) => {
+    setClickedEvent(nosEvent);
+    setModalOpen(true);
+  };
+
   return (
     <>
       <h3>The total number of bookmarks found for each type</h3>
@@ -70,16 +89,33 @@ export default function Bookemarks({ bookmarks }: Props) {
       >
         <Switch fallback={<div>Not Found</div>}>
           <Match when={selectedTab() === "kind10003"}>
-            <Kind10003 bookmarks={bookmarks} />
+            <Kind10003
+              bookmarks={bookmarks}
+              onSelect={onSelect}
+              handleClickEvent={handleClickEvent}
+            />
           </Match>
           <Match when={selectedTab() === "kind30003"}>
-            <Kind30003 bookmarks={bookmarks} />
+            <Kind30003
+              bookmarks={bookmarks}
+              onSelect={onSelect}
+              handleClickEvent={handleClickEvent}
+            />
           </Match>
           <Match when={selectedTab() === "kind30001"}>
-            <Kind30001 bookmarks={bookmarks} />
+            <Kind30001
+              bookmarks={bookmarks}
+              onSelect={onSelect}
+              handleClickEvent={handleClickEvent}
+            />
           </Match>
         </Switch>
       </Box>
+      <JsonModal
+        nosEvent={clickedEvent}
+        modalOpen={modalOpen}
+        handleModalClose={handleModalClose}
+      />
     </>
   );
 }
