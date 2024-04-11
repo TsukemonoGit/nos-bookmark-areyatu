@@ -22,7 +22,6 @@ interface RelayList {
 }
 export interface BkmProps {
   bookmarks: BookmarkEventList;
-  onSelect: any;
   handleClickEvent: any;
   handleClickPublish: any;
 }

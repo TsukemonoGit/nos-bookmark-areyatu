@@ -9,9 +9,9 @@ import { NostrEvent } from "@nostr-dev-kit/ndk";
 
 interface Props {
   bookmarks: BookmarkEventList;
-  onSelect: any;
+  handleClickPublish: any;
 }
-export default function Bookemarks({ bookmarks, onSelect }: Props) {
+export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
   const [selectedTab, setSelectedTab] = createSignal("kind10003");
   const [modalOpen, setModalOpen] = createSignal(false);
   const [clickedEvent, setClickedEvent] = createSignal<NostrEvent | null>(null);
@@ -40,9 +40,7 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
     setClickedEvent(nosEvent);
     setModalOpen(true);
   };
-  const handleClickPublish = (nosEvent: NostrEvent) => {
-    console.log(nosEvent);
-  };
+
   return (
     <>
       <h3>The total number of bookmarks found for each type</h3>
@@ -73,11 +71,6 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
           <ToggleButton value="kind30003">kind30003</ToggleButton>
           <ToggleButton value="kind30001">kind30001</ToggleButton>
         </ToggleButtonGroup>
-        {/* <ButtonGroup variant="text" aria-label="text button group">
-          <Button>One</Button>
-          <Button>Two</Button>
-          <Button>Three</Button>
-        </ButtonGroup> */}
       </Box>
       <Box
         sx={{
@@ -93,7 +86,6 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
           <Match when={selectedTab() === "kind10003"}>
             <Kind10003
               bookmarks={bookmarks}
-              onSelect={onSelect}
               handleClickEvent={handleClickEvent}
               handleClickPublish={handleClickPublish}
             />
@@ -101,7 +93,6 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
           <Match when={selectedTab() === "kind30003"}>
             <Kind30003
               bookmarks={bookmarks}
-              onSelect={onSelect}
               handleClickEvent={handleClickEvent}
               handleClickPublish={handleClickPublish}
             />
@@ -109,7 +100,6 @@ export default function Bookemarks({ bookmarks, onSelect }: Props) {
           <Match when={selectedTab() === "kind30001"}>
             <Kind30001
               bookmarks={bookmarks}
-              onSelect={onSelect}
               handleClickEvent={handleClickEvent}
               handleClickPublish={handleClickPublish}
             />

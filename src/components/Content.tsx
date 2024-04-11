@@ -30,7 +30,6 @@ export function Content(): JSXElement {
     kind30001: {},
     kind30003: {},
   });
-  const [selectedEvent, setSelectedEvent] = createSignal();
   let user: NDKUser;
   //---------------------------------------------------------------------------
   // てすとよう
@@ -68,8 +67,8 @@ export function Content(): JSXElement {
     }
   };
 
-  const handleSelect = (e: NostrEvent) => {
-    setSelectedEvent(e);
+  const handleClickPublish = (nosEvent: NostrEvent) => {
+    console.log(nosEvent);
   };
   //------------------------------------------------------------
   return (
@@ -81,10 +80,13 @@ export function Content(): JSXElement {
           onSubmit={handleSubmit}
           getPubkey={handleGetPubkey}
         />
-        <div>{pubkey()}</div>
-        <Bookemarks bookmarks={bkmEvents} onSelect={handleSelect} />
 
-        <SelectedContent selectedEvent={selectedEvent} />
+        <Bookemarks
+          bookmarks={bkmEvents}
+          handleClickPublish={handleClickPublish}
+        />
+
+        {/* <SelectedContent selectedEvent={selectedEvent} /> */}
       </Container>
     </main>
   );
