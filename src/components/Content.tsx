@@ -1,8 +1,8 @@
-import { Container } from "@suid/material";
+import { CircularProgress, Container } from "@suid/material";
 import { createStore } from "solid-js/store";
 import SetPubkey from "./SetPubkey";
 import Bookemarks from "./Bookmarks";
-import { JSXElement, createSignal } from "solid-js";
+import { JSXElement, Show, createSignal } from "solid-js";
 import SelectedContent from "./SelectedContent";
 import NDK, {
   NDKEvent,
@@ -14,28 +14,40 @@ import {
   getUserRelayList,
   getBookmarkEventList,
   BookmarkEventList,
+  RelayList,
+  publishEventToRelay,
+  checkPubkey,
 } from "../libs/nostrFunctions";
 //---------------------------------------------------------------------------
 //てすとよう
-import bookmarks from "../test/sortedBookmarks.json"; // JSONファイルを読み込む
+import bookmarkPackets from "../test/sortedBookmarksSocket.json"; // JSONファイルを読み込む
+import PublishModal from "./Modals/PublishModal";
+import { decode } from "../libs/nip19";
 //---------------------------------------------------------------------------
 const nip07signer = new NDKNip07Signer();
 
 export function Content(): JSXElement {
   const [pubkey, setPubkey] = createSignal("");
-  const [userRelays, setUserRelays] = createStore();
+  const [secArray, setSecArray] = createSignal<Uint8Array | undefined>();
+  const [publishEvent, setPublishEvent] = createSignal<NostrEvent | null>(null);
+  const [publishModalOpen, setPublishModalOpen] = createSignal(false);
+  const [nowProgress, setNowProgress] = createSignal(false);
+  const [userRelays, setUserRelays] = createStore<RelayList>({
+    read: [],
+    write: [],
+  });
 
   const [bkmEvents, setBkmEvents] = createStore<BookmarkEventList>({
     kind10003: [],
-    kind30001: {},
     kind30003: {},
+    kind30001: {},
   });
-  let user: NDKUser;
+  //let user: NDKUser;
   //---------------------------------------------------------------------------
   // てすとよう
   //ファイルを同期で読み込む
 
-  setBkmEvents(bookmarks);
+  setBkmEvents(bookmarkPackets);
 
   //---------------------------------------------------------------------------
   const handleChange = (e: Event) => {
@@ -44,16 +56,32 @@ export function Content(): JSXElement {
   };
 
   const handleSubmit = async (e: Event) => {
-    const userRelayList = await getUserRelayList(user.pubkey);
-    console.log(userRelayList);
-    setUserRelays(userRelayList);
-    const bookmarkEventList = await getBookmarkEventList(
-      user.pubkey,
-      userRelayList.read
-    );
-    console.log(bookmarkEventList);
-    console.log(e);
-    setBkmEvents(bookmarkEventList);
+    try {
+      setNowProgress(true);
+
+      const res: { npubkey: string; nsecArray: Uint8Array | undefined } =
+        checkPubkey(pubkey());
+      console.log(res);
+      setPubkey(res.npubkey);
+      if (res.nsecArray) {
+        setSecArray(res.nsecArray);
+      }
+      const userRelayList = await getUserRelayList(
+        decode(res.npubkey).data as string
+      );
+      console.log(userRelayList);
+      setUserRelays(userRelayList);
+      const bookmarkEventList = await getBookmarkEventList(
+        decode(res.npubkey).data as string,
+        userRelayList.read
+      );
+      console.log(bookmarkEventList);
+      console.log(e);
+      setBkmEvents(bookmarkEventList);
+      setNowProgress(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleGetPubkey = async (e: Event) => {
@@ -61,7 +89,6 @@ export function Content(): JSXElement {
       let NDKUser: NDKUser = await nip07signer.user();
       console.log(NDKUser.npub);
       setPubkey(NDKUser.npub);
-      user = NDKUser;
     } catch (error) {
       console.log(error);
     }
@@ -69,7 +96,34 @@ export function Content(): JSXElement {
 
   const handleClickPublish = (nosEvent: NostrEvent) => {
     console.log(nosEvent);
+    setPublishEvent(nosEvent);
+    setPublishModalOpen(true);
   };
+
+  const handlePublishModalClose = async (content: string | undefined) => {
+    console.log(content);
+    if (nowProgress()) {
+      return;
+    }
+    if (content === "publish") {
+      setNowProgress(true);
+      console.log(publishEvent());
+      try {
+        await publishEventToRelay(
+          publishEvent() as NostrEvent,
+          userRelays.write,
+          secArray()
+        );
+        setNowProgress(false);
+        setPublishEvent(null);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    setPublishModalOpen(false);
+  };
+
   //------------------------------------------------------------
   return (
     <main>
@@ -88,6 +142,19 @@ export function Content(): JSXElement {
 
         {/* <SelectedContent selectedEvent={selectedEvent} /> */}
       </Container>
+      <PublishModal
+        nosEvent={publishEvent}
+        modalOpen={publishModalOpen}
+        handleModalClose={handlePublishModalClose}
+      />
+
+      <Show when={nowProgress()}>
+        <CircularProgress
+          color="secondary"
+          sx={{ position: "fixed", bottom: 10, right: 10 }}
+          size={100}
+        />
+      </Show>
     </main>
   );
 }

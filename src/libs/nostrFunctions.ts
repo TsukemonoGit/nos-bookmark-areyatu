@@ -1,22 +1,19 @@
-import NDK, {
-  NDKEvent,
-  NDKNip07Signer,
-  NDKUser,
-  NostrEvent,
-} from "@nostr-dev-kit/ndk";
+import { NostrEvent } from "@nostr-dev-kit/ndk";
 import {
   EventPacket,
-  ReqPacket,
   createRxBackwardReq,
   createRxNostr,
-  latest,
+  nip07Signer,
   now,
+  seckeySigner,
   uniq,
   verify,
 } from "rx-nostr";
 
 import { extensionRelays, relaySearchRelays } from "./relays";
-interface RelayList {
+import { decode, npubEncode, nsecEncode } from "./nip19";
+import { getPublicKey } from "./utils";
+export interface RelayList {
   read: string[];
   write: string[];
 }
@@ -26,9 +23,9 @@ export interface BkmProps {
   handleClickPublish: any;
 }
 export interface BookmarkEventList {
-  kind10003: NostrEvent[];
-  kind30003: { [id: string]: NostrEvent[] };
-  kind30001: { [id: string]: NostrEvent[] };
+  kind10003: EventPacket[];
+  kind30003: { [id: string]: EventPacket[] };
+  kind30001: { [id: string]: EventPacket[] };
 }
 
 export const getUserRelayList = async (pubkey: string): Promise<RelayList> => {
@@ -160,18 +157,18 @@ export const getBookmarkEventList = async (
       next: (packet: EventPacket) => {
         console.log("Received:", packet);
         if (packet.event.kind === 10003) {
-          res.kind10003.push(packet.event);
+          res.kind10003.push(packet);
         } else if (packet.event.kind === 30003) {
           const id = packet.event.tags.find((item) => item[0] == "d");
           if (id) {
             if (!res.kind30003[id[1]]) res.kind30003[id[1]] = [];
-            res.kind30003[id[1]].push(packet.event);
+            res.kind30003[id[1]].push(packet);
           }
         } else if (packet.event.kind === 30001) {
           const id = packet.event.tags.find((item) => item[0] == "d");
           if (id) {
             if (!res.kind30001[id[1]]) res.kind30001[id[1]] = [];
-            res.kind30001[id[1]].push(packet.event);
+            res.kind30001[id[1]].push(packet);
           }
         }
       },
@@ -230,8 +227,64 @@ export function sortBookmarkEventList(
   return sortedBookmarkEventList;
 }
 
-function sortEventsByCreatedAt(events: NostrEvent[]): NostrEvent[] {
-  return events.sort((a, b) => {
-    return b.created_at - a.created_at;
+function sortEventsByCreatedAt(packets: EventPacket[]): EventPacket[] {
+  return packets.sort((a, b) => {
+    return b.event.created_at - a.event.created_at;
   });
+}
+
+export async function publishEventToRelay(
+  event: NostrEvent,
+  relay: string[],
+  nsec?: Uint8Array
+) {
+  if (relay.length <= 0) {
+    throw Error;
+  }
+
+  if (nsec !== undefined) {
+    event.pubkey = getPublicKey(nsec);
+  }
+  const rxNostr = createRxNostr({
+    signer: nsec !== undefined ? seckeySigner(nsecEncode(nsec)) : nip07Signer(),
+  });
+  // const rxNostr =
+  //   nsec !== undefined
+  //     ? createRxNostr({
+  //         signer: seckeySigner(nsecEncode(nsec)),
+  //       })
+  //     : createRxNostr();
+  //rxNostr.setDefaultRelays(relay);
+  // rxNostr.send({
+  //   kind: event.kind as number,
+  //   content: event.content,
+  //   tags: event.tags,
+  // });
+}
+export function checkPubkey(str: string): {
+  npubkey: string;
+  nsecArray: Uint8Array | undefined;
+} {
+  console.log(str);
+  let res = { npubkey: "", nsecArray: undefined };
+  try {
+    if (str.startsWith("nostr:")) {
+      str = str.slice(6);
+    }
+    if (str.startsWith("npub")) {
+      decode(str).data as string; //decodeしてエラーにならないかチェック
+      res.npubkey = str;
+    } else if (str.startsWith("nsec")) {
+      const sec = decode(str).data as Uint8Array;
+      res.npubkey = npubEncode(getPublicKey(sec));
+      console.log(res);
+    } else {
+      res.npubkey = npubEncode(str);
+      console.log(res);
+    }
+    console.log(res);
+    return res;
+  } catch (error) {
+    throw Error;
+  }
 }

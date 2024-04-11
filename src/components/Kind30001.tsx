@@ -21,7 +21,7 @@ export default function Kind30001(props: BkmProps) {
 
   return (
     <div>
-      kind:30001
+      <div>kind:30001</div>
       <FormControl
         sx={{
           p: 1,

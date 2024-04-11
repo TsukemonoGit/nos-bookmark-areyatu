@@ -13,7 +13,7 @@ import {
   useTheme,
 } from "@suid/material";
 import { NostrEvent } from "@nostr-dev-kit/ndk";
-import JsonModal from "./JsonModal";
+import JsonModal from "./Modals/JsonModal";
 import EventItem from "./EventItem";
 
 export default function Kind10003(props: BkmProps) {

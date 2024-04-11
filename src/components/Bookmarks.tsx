@@ -4,8 +4,9 @@ import { Box, ToggleButton, ToggleButtonGroup } from "@suid/material";
 import Kind10003 from "./Kind10003";
 import Kind30001 from "./Kind30001";
 import Kind30003 from "./Kind30003";
-import JsonModal from "./JsonModal";
+import JsonModal from "./Modals/JsonModal";
 import { NostrEvent } from "@nostr-dev-kit/ndk";
+import { EventPacket } from "rx-nostr";
 
 interface Props {
   bookmarks: BookmarkEventList;
@@ -14,7 +15,9 @@ interface Props {
 export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
   const [selectedTab, setSelectedTab] = createSignal("kind10003");
   const [modalOpen, setModalOpen] = createSignal(false);
-  const [clickedEvent, setClickedEvent] = createSignal<NostrEvent | null>(null);
+  const [clickedEvent, setClickedEvent] = createSignal<EventPacket | null>(
+    null
+  );
   const handleTabChange = (tabName: string) => {
     setSelectedTab(tabName);
   };
@@ -36,7 +39,7 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
     setModalOpen(false);
   };
 
-  const handleClickEvent = (nosEvent: NostrEvent) => {
+  const handleClickEvent = (nosEvent: EventPacket) => {
     setClickedEvent(nosEvent);
     setModalOpen(true);
   };
