@@ -17,17 +17,19 @@ export default function JsonModal(props: {
     | undefined;
   nosEvent: () => EventPacket | null;
 }) {
-  // const url = (): string => {
-  //   const eventId = props.nosEvent()?.event.id;
-  //   const seenRelay = props.nosEvent()?.from;
-  //   const nevent = neventEncode({
-  //     id: eventId,
-  //     relays: [seenRelay],
-  //     author: props.nosEvent()?.event.pubkey,
-  //     kind: props.nosEvent()?.event.kind,
-  //   });
-  //   return "https://nostter.app/" + nevent;
-  // };
+  const url = (): string => {
+    const eventId = props.nosEvent()?.event.id;
+    const seenRelay = props.nosEvent()?.from;
+    const nevent = neventEncode({
+      id: eventId ?? "",
+      relays: [seenRelay ?? ""],
+      author: props.nosEvent()?.event.pubkey,
+      kind: props.nosEvent()?.event.kind,
+    });
+    return "https://nostviewstr.vercel.app/" + nevent;
+  };
+  console.log(url());
+
   const theme = useTheme();
   return (
     <Modal
@@ -86,17 +88,25 @@ export default function JsonModal(props: {
               justifyContent: "end",
             }}
           >
-            <div>
-              seen on: {props.nosEvent()?.from}
-              {/* <Link
+            <Grid
+              item
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div>seen on: {props.nosEvent()?.from}</div>
+
+              <Link
                 href={url()}
                 target="_blank"
                 rel="noopener noreferrer"
                 color="primary"
+                sx={{ textAlign: "end" }}
               >
-                Open in Nostter
-              </Link> */}
-            </div>
+                Open in NostViewstr
+              </Link>
+            </Grid>
           </Grid>
         </Grid>
       </Box>

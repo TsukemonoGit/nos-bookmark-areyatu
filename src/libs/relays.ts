@@ -39,4 +39,11 @@ export const extensionRelays = [
   "wss://e.nos.lol",
   "wss://relayable.org",
   "wss://relay.mostr.pub",
+  //------------------------
+  //https://docs.nostr.wine/filter/readme
+  "wss://public.relaying.io",
+  "wss://socolo.nl",
+  "wss://nostr.fractalized.net",
+  "wss://nostr.einundzwanzig.space",
+  "wss://relay.nostr.net",
 ];
