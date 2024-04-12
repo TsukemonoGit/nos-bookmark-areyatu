@@ -13,11 +13,23 @@ export default function EventItem(props: {
 
   return (
     <Grid container spacing={1} sx={{ my: 0.1 }}>
-      <Grid item>
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          mr: 1,
+          alignItems: "center",
+        }}
+      >
         <Button
           variant="contained"
           color="primary"
           onClick={() => handleClickPublish(nosEvent.event)}
+          sx={{
+            py: [1, 2, 2],
+            px: 1,
+          }}
         >
           Publish
         </Button>
