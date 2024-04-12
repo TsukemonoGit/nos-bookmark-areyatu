@@ -1,15 +1,10 @@
-import { CircularProgress, Container } from "@suid/material";
+import { Box, CircularProgress, Container } from "@suid/material";
 import { createStore } from "solid-js/store";
 import SetPubkey from "./SetPubkey";
 import Bookemarks from "./Bookmarks";
 import { JSXElement, Show, createSignal } from "solid-js";
 import SelectedContent from "./SelectedContent";
-import NDK, {
-  NDKEvent,
-  NDKNip07Signer,
-  NDKUser,
-  NostrEvent,
-} from "@nostr-dev-kit/ndk";
+import { NDKNip07Signer, NDKUser } from "@nostr-dev-kit/ndk";
 import {
   getUserRelayList,
   getBookmarkEventList,
@@ -17,12 +12,14 @@ import {
   RelayList,
   publishEventToRelay,
   checkPubkey,
+  NostrEvent,
 } from "../libs/nostrFunctions";
 //---------------------------------------------------------------------------
 //てすとよう
 import bookmarkPackets from "../test/sortedBookmarksSocket.json"; // JSONファイルを読み込む
 import PublishModal from "./Modals/PublishModal";
 import { decode } from "../libs/nip19";
+import Toast from "./Modals/Toast";
 //---------------------------------------------------------------------------
 const nip07signer = new NDKNip07Signer();
 
@@ -42,12 +39,23 @@ export function Content(): JSXElement {
     kind30003: {},
     kind30001: {},
   });
+
+  const [toastOpen, setToastOpen] = createSignal<boolean>();
+
+  const [toastState, setToastState] = createSignal<{
+    message: string;
+    type: "success" | "info" | "warning" | "error";
+  }>({
+    message: "",
+    type: "info",
+  });
+
   //let user: NDKUser;
   //---------------------------------------------------------------------------
   // てすとよう
   //ファイルを同期で読み込む
 
-  setBkmEvents(bookmarkPackets);
+  setBkmEvents(bookmarkPackets as unknown as BookmarkEventList);
 
   //---------------------------------------------------------------------------
   const handleChange = (e: Event) => {
@@ -56,9 +64,27 @@ export function Content(): JSXElement {
   };
 
   const handleSubmit = async (e: Event) => {
-    try {
-      setNowProgress(true);
+    console.log(pubkey().length);
+    if (!pubkey() || pubkey().length < 60) {
+      setToastState({ message: "Check your public key", type: "error" });
+      //setToastState({ message: "Check \nyour \npublic \nkey", type: "error" });
+      setToastOpen(true);
+      setNowProgress(false);
+      return;
+    }
 
+    setNowProgress(true);
+    //初期化------------------
+    setSecArray();
+    setPublishEvent(null);
+    setUserRelays({ read: [], write: [] });
+    setBkmEvents({
+      kind10003: [],
+      kind30003: {},
+      kind30001: {},
+    });
+    try {
+      //-----------------------
       const res: { npubkey: string; nsecArray: Uint8Array | undefined } =
         checkPubkey(pubkey());
       console.log(res);
@@ -66,32 +92,65 @@ export function Content(): JSXElement {
       if (res.nsecArray) {
         setSecArray(res.nsecArray);
       }
+
+      if (pubkey().length < 63) {
+        throw Error;
+      }
+    } catch (error) {
+      setToastState({ message: "Check your public key", type: "error" });
+      setToastOpen(true);
+      setNowProgress(false);
+      return;
+    }
+
+    try {
       const userRelayList = await getUserRelayList(
-        decode(res.npubkey).data as string
+        decode(pubkey()).data as string
       );
       console.log(userRelayList);
       setUserRelays(userRelayList);
+      if (userRelayList.read.length <= 0) {
+        throw Error("Failed to get your relays");
+      }
       const bookmarkEventList = await getBookmarkEventList(
-        decode(res.npubkey).data as string,
+        decode(pubkey()).data as string,
         userRelayList.read
       );
+      if (
+        bookmarkEventList.kind10003.length <= 0 &&
+        Object.keys(bookmarkEventList.kind30001).length <= 0 &&
+        Object.keys(bookmarkEventList.kind30003).length <= 0
+      ) {
+        throw Error("bookmarks not found");
+      }
       console.log(bookmarkEventList);
       console.log(e);
       setBkmEvents(bookmarkEventList);
       setNowProgress(false);
-    } catch (error) {
+    } catch (error: any) {
+      setToastState({
+        message: error.message || "error",
+        type: "error",
+      });
+      setToastOpen(true);
+
+      setNowProgress(false);
       console.log(error);
     }
   };
 
   const handleGetPubkey = async (e: Event) => {
+    setNowProgress(true);
     try {
       let NDKUser: NDKUser = await nip07signer.user();
       console.log(NDKUser.npub);
       setPubkey(NDKUser.npub);
     } catch (error) {
       console.log(error);
+      setToastState({ message: "failed to get pubkey", type: "error" });
+      setToastOpen(true);
     }
+    setNowProgress(false);
   };
 
   const handleClickPublish = (nosEvent: NostrEvent) => {
@@ -109,11 +168,22 @@ export function Content(): JSXElement {
       setNowProgress(true);
       console.log(publishEvent());
       try {
-        await publishEventToRelay(
+        const res: Map<string, boolean> = await publishEventToRelay(
           publishEvent() as NostrEvent,
           userRelays.write,
           secArray()
         );
+        let resString = "";
+        for (const [relayUrl, isSuccess] of res.entries()) {
+          resString += `${relayUrl}: ${isSuccess}\n`;
+        }
+        const hasSuccess = Array.from(res.values()).some(
+          (isSuccess) => isSuccess
+        );
+        setToastState({
+          message: resString,
+          type: hasSuccess ? "success" : "error",
+        });
         setNowProgress(false);
         setPublishEvent(null);
       } catch (error) {
@@ -122,6 +192,10 @@ export function Content(): JSXElement {
     }
 
     setPublishModalOpen(false);
+  };
+
+  const handleToastClose = () => {
+    setToastOpen(false);
   };
 
   //------------------------------------------------------------
@@ -155,6 +229,12 @@ export function Content(): JSXElement {
           size={100}
         />
       </Show>
+      <Toast
+        timeout={5}
+        toastOpen={toastOpen}
+        handleToastClose={handleToastClose}
+        toastState={toastState}
+      />
     </main>
   );
 }

@@ -1,6 +1,6 @@
-import { NostrEvent } from "@nostr-dev-kit/ndk";
 import {
   EventPacket,
+  RxNostr,
   createRxBackwardReq,
   createRxNostr,
   nip07Signer,
@@ -27,6 +27,16 @@ export interface BookmarkEventList {
   kind30003: { [id: string]: EventPacket[] };
   kind30001: { [id: string]: EventPacket[] };
 }
+
+export type NostrEvent = {
+  created_at: number;
+  content: string;
+  tags: any[];
+  kind: number;
+  pubkey: string;
+  id: string;
+  sig: string;
+};
 
 export const getUserRelayList = async (pubkey: string): Promise<RelayList> => {
   console.log(pubkey);
@@ -237,50 +247,92 @@ export async function publishEventToRelay(
   event: NostrEvent,
   relay: string[],
   nsec?: Uint8Array
-) {
+): Promise<Map<string, boolean>> {
   if (relay.length <= 0) {
+    //todo 書き込みリレー見つかってないときどうする
     throw Error;
   }
 
-  if (nsec !== undefined) {
-    event.pubkey = getPublicKey(nsec);
-  }
+  (event.created_at = Math.floor(Date.now() / 1000)), (event.id = "");
+  event.sig = "";
+  console.log(event);
+  // if (nsec !== undefined) {
+  //   event.pubkey = getPublicKey(nsec);
+  // }
   // const rxNostr = createRxNostr({
   //   signer: nsec !== undefined ? seckeySigner(nsecEncode(nsec)) : nip07Signer(),
   // });
-  // const rxNostr =
-  //   nsec !== undefined
-  //     ? createRxNostr({
-  //         signer: seckeySigner(nsecEncode(nsec)),
-  //       })
-  //     : createRxNostr();
-  //rxNostr.setDefaultRelays(relay);
-  // rxNostr.send({
-  //   kind: event.kind as number,
-  //   content: event.content,
-  //   tags: event.tags,
-  // });
+  const rxNostr = createRxNostr();
+  try {
+    const result = await sendEventToRelay(rxNostr, event, relay);
+    console.log("送信結果:", result);
+    return result;
+  } catch (error) {
+    console.error("イベントの送信中にエラーが発生しました:", error);
+    throw Error;
+  }
 }
+
+// rxNostr.sendをPromise化する関数
+async function sendEventToRelay(
+  rxNostr: RxNostr,
+  event: NostrEvent,
+  relays: string[]
+): Promise<Map<string, boolean>> {
+  return new Promise<Map<string, boolean>>((resolve, reject) => {
+    const res: Map<string, boolean> = new Map();
+
+    const handleTimeout = () => {
+      console.log("Timeout reached");
+      resolve(res);
+    };
+
+    const subscription = rxNostr.send(event, { relays }).subscribe((packet) => {
+      console.log(
+        `リレー ${packet.from} への送信が ${
+          packet.ok ? "成功" : "失敗"
+        } しました。`
+      );
+      res.set(packet.from, packet.ok);
+
+      // すべてのリレーへの送信が完了したら、Observableを完了させる
+      if (res.size === relays.length) {
+        subscription.unsubscribe(); // Observableの購読を解除
+        resolve(res); // Promiseを解決
+      }
+    });
+
+    setTimeout(handleTimeout, 2000); // タイムアウトの設定
+  });
+}
+
 export function checkPubkey(str: string): {
   npubkey: string;
   nsecArray: Uint8Array | undefined;
 } {
   console.log(str);
   let res = { npubkey: "", nsecArray: undefined };
+
   try {
     if (str.startsWith("nostr:")) {
       str = str.slice(6);
     }
+    //npubかhexかnsec
     if (str.startsWith("npub")) {
       decode(str).data as string; //decodeしてエラーにならないかチェック
       res.npubkey = str;
+      //nsecかhex
     } else if (str.startsWith("nsec")) {
       const sec = decode(str).data as Uint8Array;
       res.npubkey = npubEncode(getPublicKey(sec));
       console.log(res);
+      //hex
     } else {
+      //エンコードしてデコードできるか？と思ったけどエラーにならない
+      // const tmp = npubEncode(str);
+
+      //console.log(tmp ,decode(tmp).data as string);
       res.npubkey = npubEncode(str);
-      console.log(res);
     }
     console.log(res);
     return res;

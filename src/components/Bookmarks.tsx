@@ -23,18 +23,6 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
     setSelectedTab(tabName);
   };
 
-  // kind30001のNostrEvent配列を取得し、要素数を合計する
-  const totalKind30001 = Object.values(bookmarks.kind30001).reduce(
-    (acc, curr) => acc + curr.length,
-    0
-  );
-
-  // kind30003のNostrEvent配列を取得し、要素数を合計する
-  const totalKind30003 = Object.values(bookmarks.kind30003).reduce(
-    (acc, curr) => acc + curr.length,
-    0
-  );
-
   const handleModalClose = () => {
     setClickedEvent(null);
     setModalOpen(false);
@@ -50,8 +38,20 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
       <h3>The total number of bookmarks found for each type</h3>
       <ul>
         <li>kind10003:{bookmarks.kind10003.length}</li>
-        <li>kind30003:{totalKind30003}</li>
-        <li>kind30001:{totalKind30001}</li>
+        <li>
+          kind30003:
+          {Object.values(bookmarks.kind30003).reduce(
+            (acc, curr) => acc + curr.length,
+            0
+          )}
+        </li>
+        <li>
+          kind30001:
+          {Object.values(bookmarks.kind30001).reduce(
+            (acc, curr) => acc + curr.length,
+            0
+          )}
+        </li>
       </ul>
       <Box
         sx={{
@@ -98,7 +98,6 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
           </Match>
           <Match when={selectedTab() === "kind30003"}>
             <BkmBox kind="30003">
-              {" "}
               <Kind30003
                 bookmarks={bookmarks}
                 handleClickEvent={handleClickEvent}
@@ -108,7 +107,6 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
           </Match>
           <Match when={selectedTab() === "kind30001"}>
             <BkmBox kind="30001">
-              {" "}
               <Kind30001
                 bookmarks={bookmarks}
                 handleClickEvent={handleClickEvent}

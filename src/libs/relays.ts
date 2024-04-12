@@ -9,8 +9,9 @@ export const relaySearchRelays = [
   "wss://purplepag.es", //https://purplepag.es/what
   "wss://relay.nostr.band",
   "wss://nos.lol",
+
   //kind:3
-  //'wss://relayable.org',
+  "wss://relayable.org",
 ];
 
 export const extensionRelays = [
