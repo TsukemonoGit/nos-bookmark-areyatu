@@ -25,7 +25,7 @@ export default function SetPubkey({
         <Grid item> */}
       <TextField
         id="pubkey"
-        label="pubkey"
+        label="npub or nsec"
         variant="outlined"
         fullWidth
         value={pubkey()}

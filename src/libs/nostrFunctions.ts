@@ -3,6 +3,7 @@ import {
   RxNostr,
   createRxBackwardReq,
   createRxNostr,
+  getSignedEvent,
   nip07Signer,
   now,
   seckeySigner,
@@ -13,6 +14,7 @@ import {
 import { extensionRelays, relaySearchRelays } from "./relays";
 import { decode, npubEncode, nsecEncode } from "./nip19";
 import { getPublicKey } from "./utils";
+import { NDKNip07Signer } from "@nostr-dev-kit/ndk";
 export interface RelayList {
   read: string[];
   write: string[];
@@ -27,7 +29,15 @@ export interface BookmarkEventList {
   kind30003: { [id: string]: EventPacket[] };
   kind30001: { [id: string]: EventPacket[] };
 }
-
+export type EventParameters = {
+  created_at: number;
+  content: string;
+  tags: any[];
+  kind: number;
+  pubkey?: string;
+  id?: string;
+  sig?: string;
+};
 export type NostrEvent = {
   created_at: number;
   content: string;
@@ -248,35 +258,57 @@ export async function publishEventToRelay(
   relay: string[],
   nsec?: Uint8Array
 ): Promise<Map<string, boolean>> {
-  if (relay.length <= 0) {
-    //todo 書き込みリレー見つかってないときどうする
-    throw Error;
-  }
-
-  (event.created_at = Math.floor(Date.now() / 1000)), (event.id = "");
-  event.sig = "";
-  console.log(event);
-  // if (nsec !== undefined) {
-  //   event.pubkey = getPublicKey(nsec);
+  // if (relay.length <= 0) {
+  //   //todo 書き込みリレー見つかってないときどうする
+  //   throw Error;
   // }
-  // const rxNostr = createRxNostr({
-  //   signer: nsec !== undefined ? seckeySigner(nsecEncode(nsec)) : nip07Signer(),
-  // });
-  const rxNostr = createRxNostr();
-  try {
-    const result = await sendEventToRelay(rxNostr, event, relay);
-    console.log("送信結果:", result);
-    return result;
-  } catch (error) {
-    console.error("イベントの送信中にエラーが発生しました:", error);
-    throw Error;
-  }
+  const eventParams: EventParameters = {
+    created_at: Math.floor(Date.now() / 1000),
+    content: event.content,
+    tags: event.tags,
+    kind: event.kind,
+  };
+  // event.created_at = Math.floor(Date.now() / 1000);
+  // event.id = "";
+  // event.sig = "";
+  console.log("eventParams:", eventParams);
+  // if (nsec !== undefined) {
+  //   newEvent.pubkey = getPublicKey(nsec);
+  // }
+  console.log("nsec:", nsec);
+  const signer =
+    nsec !== undefined ? seckeySigner(nsecEncode(nsec)) : nip07Signer();
+  console.log(signer);
+  const rxNostr = createRxNostr({
+    signer: signer,
+  });
+  //const rxNostr = createRxNostr();
+  const publishEvent = await signer.signEvent(eventParams); //error
+  console.log("signedEvent:", publishEvent);
+
+  //------pubkeyのnip07認証画面は出るけどsignの認証画面は出ない
+  //------nsecでは署名成功
+  //------------------------------------------------------
+
+  //------------------------------------------------------
+
+  // try {
+  //   //const result = await sendEventToRelay(rxNostr, eventParams, relay);
+  //   const result=new Map;
+  //   //  console.log("送信結果:", result);
+  //   return result;
+  // } catch (error) {
+  //   console.error("イベントの送信中にエラーが発生しました:", error);
+  //   throw Error;
+  // }
+
+  return new Map();
 }
 
 // rxNostr.sendをPromise化する関数
 async function sendEventToRelay(
   rxNostr: RxNostr,
-  event: NostrEvent,
+  event: EventParameters,
   relays: string[]
 ): Promise<Map<string, boolean>> {
   return new Promise<Map<string, boolean>>((resolve, reject) => {
@@ -302,36 +334,33 @@ async function sendEventToRelay(
       }
     });
 
-    setTimeout(handleTimeout, 2000); // タイムアウトの設定
+    setTimeout(handleTimeout, 5000); // タイムアウトの設定
   });
 }
 
 export function checkPubkey(str: string): {
   npubkey: string;
-  nsecArray: Uint8Array | undefined;
+  nsecArray?: Uint8Array;
 } {
   console.log(str);
-  let res = { npubkey: "", nsecArray: undefined };
+  let res: { npubkey: string; nsecArray?: Uint8Array } = { npubkey: "" };
 
   try {
     if (str.startsWith("nostr:")) {
       str = str.slice(6);
     }
-    //npubかhexかnsec
+    // npubかhexかnsec
     if (str.startsWith("npub")) {
-      decode(str).data as string; //decodeしてエラーにならないかチェック
+      decode(str).data as string; // decodeしてエラーにならないかチェック
       res.npubkey = str;
-      //nsecかhex
+      // nsecかhex
     } else if (str.startsWith("nsec")) {
       const sec = decode(str).data as Uint8Array;
+      res.nsecArray = sec;
       res.npubkey = npubEncode(getPublicKey(sec));
       console.log(res);
-      //hex
+      // hex
     } else {
-      //エンコードしてデコードできるか？と思ったけどエラーにならない
-      // const tmp = npubEncode(str);
-
-      //console.log(tmp ,decode(tmp).data as string);
       res.npubkey = npubEncode(str);
     }
     console.log(res);

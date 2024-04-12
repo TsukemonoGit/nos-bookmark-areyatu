@@ -184,10 +184,19 @@ export function Content(): JSXElement {
           message: resString,
           type: hasSuccess ? "success" : "error",
         });
+        setToastOpen(true);
         setNowProgress(false);
+
         setPublishEvent(null);
       } catch (error) {
+        setToastState({
+          message: "failed to publish",
+          type: "error",
+        });
         console.log(error);
+        setToastOpen(true);
+        setNowProgress(false);
+        setPublishEvent(null);
       }
     }
 
