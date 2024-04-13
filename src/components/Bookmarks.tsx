@@ -4,6 +4,8 @@ import {
   Box,
   List,
   ListItem,
+  ListItemIcon,
+  ListSubheader,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
@@ -17,7 +19,7 @@ import JsonModal from "./Modals/JsonModal";
 import { NostrEvent } from "@nostr-dev-kit/ndk";
 import { EventPacket } from "rx-nostr";
 import BkmBox from "./BkmBox";
-
+import FiberManualRecordIcon from "@suid/icons-material/FiberManualRecord";
 interface Props {
   bookmarks: BookmarkEventList;
   handleClickPublish: any;
@@ -49,22 +51,48 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
           The total number of bookmarks found for each type
         </Typography>
         <List>
-          <ListItem sx={{ pt: 0.5, pb: 0 }}>
-            kind10003:{bookmarks.kind10003.length}
+          <ListItem sx={{ py: 1 }}>
+            <FiberManualRecordIcon
+              color="primary"
+              fontSize="small"
+              sx={{ mr: 2 }}
+            />
+            <Stack flexDirection="row" alignItems="center">
+              <Typography variant="body1">
+                kind:10003 (Bookmark list)
+              </Typography>
+              <Typography variant="body1" sx={{ mx: 2 }}>
+                {bookmarks.kind10003.length}
+              </Typography>
+            </Stack>
           </ListItem>
-          <ListItem sx={{ pt: 0.5, pb: 0 }}>
-            kind30003:
-            {Object.values(bookmarks.kind30003).reduce(
-              (acc, curr) => acc + curr.length,
-              0
-            )}
+          <ListItem sx={{ py: 1 }}>
+            <FiberManualRecordIcon
+              color="primary"
+              fontSize="small"
+              sx={{ mr: 2 }}
+            />
+            <Typography variant="body1">kind:30003 (Bookmark sets)</Typography>
+            <Typography variant="body1" sx={{ mx: 2 }}>
+              {Object.values(bookmarks.kind30003).reduce(
+                (acc, curr) => acc + curr.length,
+                0
+              )}
+            </Typography>
           </ListItem>
-          <ListItem sx={{ pt: 0.5, pb: 0 }}>
-            kind30001:
-            {Object.values(bookmarks.kind30001).reduce(
-              (acc, curr) => acc + curr.length,
-              0
-            )}
+          <ListItem sx={{ py: 1 }}>
+            <FiberManualRecordIcon
+              color="primary"
+              fontSize="small"
+              sx={{ mr: 2 }}
+            />
+            <Typography variant="body1">kind:30001 (Generic lists)</Typography>
+            <Typography variant="body1" sx={{ mx: 2 }}>
+              {Object.values(bookmarks.kind30001).reduce(
+                (acc, curr) => acc + curr.length,
+                0
+              )}
+            </Typography>
           </ListItem>
         </List>
       </Stack>

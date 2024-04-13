@@ -34,7 +34,7 @@ export function Footer() {
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             // alignItems: "center",
             "& > *": {
               m: 1,
@@ -52,6 +52,18 @@ export function Footer() {
             }}
           >
             source
+          </Link>
+          <Link
+            href={"https://github.com/nostr-protocol/nips/blob/master/51.md"}
+            target="_blank"
+            rel="noopener noreferrer"
+            color="primary"
+            underline="none"
+            sx={{
+              p: 2,
+            }}
+          >
+            NIP-51
           </Link>
         </Box>
       </Container>
