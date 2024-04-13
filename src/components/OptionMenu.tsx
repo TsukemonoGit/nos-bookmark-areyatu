@@ -46,7 +46,7 @@ export default function OptionMenu(props: Props) {
         >
           <Stack
             flex={"inline-flex"}
-            sx={{ flexWrap: "wrap" }}
+            sx={{ flexWrap: "wrap", mb: 2 }}
             flexDirection="row"
             whiteSpace="pre-line"
           >
@@ -62,22 +62,20 @@ export default function OptionMenu(props: Props) {
               target="_blank"
               rel="noopener noreferrer"
               color="primary"
-              sx={{ alignSelf: "center", ml: 4, mb: 2 }}
+              sx={{ alignSelf: "center", ml: 4 }}
             >
               extensionRelays
             </Link>
           </Stack>
 
-          <Stack flexDirection="row" sx={{ flexWrap: "wrap" }}>
+          <Stack flexDirection="row" sx={{ flexWrap: "wrap", mb: 2 }}>
             <FormControlLabel
               value={1}
               control={<Radio />}
               label="そこそこに探す (60 relay くらい) "
               sx={{ flex: "inline-flex" }}
             />
-            <Stack
-              sx={{ alignSelf: "center", ml: 4, display: "flex-inline", mb: 2 }}
-            >
+            <Stack sx={{ alignSelf: "center", ml: 4, display: "flex-inline" }}>
               +
               <Link
                 href={"https://api.nostr.watch/v1/online"}
@@ -91,15 +89,13 @@ export default function OptionMenu(props: Props) {
               の一部
             </Stack>
           </Stack>
-          <Stack flexDirection="row" sx={{ flexWrap: "wrap" }}>
+          <Stack flexDirection="row" sx={{ flexWrap: "wrap", mb: 2 }}>
             <FormControlLabel
               value={2}
               control={<Radio />}
               label="めっちゃ探す (200 relay くらい) "
             />
-            <Stack
-              sx={{ alignSelf: "center", display: "flex-inline", ml: 4, mb: 2 }}
-            >
+            <Stack sx={{ alignSelf: "center", display: "flex-inline", ml: 4 }}>
               +
               <Link
                 href={"https://api.nostr.watch/v1/online"}
