@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Container } from "@suid/material";
-import { createStore } from "solid-js/store";
+import { createStore, unwrap } from "solid-js/store";
 import SetPubkey from "./SetPubkey";
 import Bookemarks from "./Bookmarks";
 import { JSXElement, Show, createSignal } from "solid-js";
@@ -16,7 +16,7 @@ import {
 } from "../libs/nostrFunctions";
 //---------------------------------------------------------------------------
 //てすとよう
-import bookmarkPackets from "../test/sortedBookmarksSocket.json"; // JSONファイルを読み込む
+//import bookmarkPackets from "../test/sortedBookmarksSocket.json"; // JSONファイルを読み込む
 import PublishModal from "./Modals/PublishModal";
 import { decode } from "../libs/nip19";
 import Toast from "./Modals/Toast";
@@ -50,12 +50,11 @@ export function Content(): JSXElement {
     type: "info",
   });
 
-  //let user: NDKUser;
   //---------------------------------------------------------------------------
   // てすとよう
   //ファイルを同期で読み込む
 
-  setBkmEvents(bookmarkPackets as unknown as BookmarkEventList);
+  //setBkmEvents(bookmarkPackets as unknown as BookmarkEventList);
 
   //---------------------------------------------------------------------------
   const handleChange = (e: Event) => {
@@ -67,7 +66,6 @@ export function Content(): JSXElement {
     console.log(pubkey().length);
     if (!pubkey() || pubkey().length < 60) {
       setToastState({ message: "Check your public key", type: "error" });
-      //setToastState({ message: "Check \nyour \npublic \nkey", type: "error" });
       setToastOpen(true);
       setNowProgress(false);
       return;
@@ -85,7 +83,7 @@ export function Content(): JSXElement {
     });
     try {
       //-----------------------
-      const res: { npubkey: string; nsecArray: Uint8Array | undefined } =
+      const res: { npubkey: string; nsecArray?: Uint8Array | undefined } =
         checkPubkey(pubkey());
       console.log(res);
       setPubkey(res.npubkey);
@@ -169,13 +167,13 @@ export function Content(): JSXElement {
       console.log(publishEvent());
       try {
         const res: Map<string, boolean> = await publishEventToRelay(
-          publishEvent() as NostrEvent,
+          unwrap(publishEvent() as NostrEvent),
           userRelays.write,
           secArray()
         );
-        let resString = "";
+        let resString = "Published\n";
         for (const [relayUrl, isSuccess] of res.entries()) {
-          resString += `${relayUrl}: ${isSuccess}\n`;
+          resString += `${relayUrl}: ${isSuccess ? "Success" : "Failed"}\n`;
         }
         const hasSuccess = Array.from(res.values()).some(
           (isSuccess) => isSuccess
@@ -188,9 +186,9 @@ export function Content(): JSXElement {
         setNowProgress(false);
 
         setPublishEvent(null);
-      } catch (error) {
+      } catch (error: any) {
         setToastState({
-          message: "failed to publish",
+          message: error.message ? error.message : "Failed to publish",
           type: "error",
         });
         console.log(error);

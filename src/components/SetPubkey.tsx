@@ -35,7 +35,7 @@ export default function SetPubkey({
       {/* </Grid>
       </Grid> */}
       <Button variant="contained" onClick={onSubmit} sx={{ mt: 2 }}>
-        Submit
+        Get Bookmarks
       </Button>
     </>
   );

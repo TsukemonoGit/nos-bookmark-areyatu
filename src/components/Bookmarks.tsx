@@ -1,4 +1,4 @@
-import { JSXElement, Match, Switch, createSignal } from "solid-js";
+import { JSXElement, Match, Show, Switch, createSignal } from "solid-js";
 import { BkmProps, BookmarkEventList } from "../libs/nostrFunctions";
 import {
   Box,
@@ -44,20 +44,22 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
 
   return (
     <>
-      <Stack>
-        <Typography variant="h4">
+      <Stack mt="1rem">
+        <Typography variant="h5">
           The total number of bookmarks found for each type
         </Typography>
         <List>
-          <ListItem>kind10003:{bookmarks.kind10003.length}</ListItem>
-          <ListItem>
+          <ListItem sx={{ pt: 0.5, pb: 0 }}>
+            kind10003:{bookmarks.kind10003.length}
+          </ListItem>
+          <ListItem sx={{ pt: 0.5, pb: 0 }}>
             kind30003:
             {Object.values(bookmarks.kind30003).reduce(
               (acc, curr) => acc + curr.length,
               0
             )}
           </ListItem>
-          <ListItem>
+          <ListItem sx={{ pt: 0.5, pb: 0 }}>
             kind30001:
             {Object.values(bookmarks.kind30001).reduce(
               (acc, curr) => acc + curr.length,
@@ -102,29 +104,35 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
         <Switch fallback={<div>Not Found</div>}>
           <Match when={selectedTab() === "kind10003"}>
             <BkmBox kind="10003">
-              <Kind10003
-                bookmarks={bookmarks}
-                handleClickEvent={handleClickEvent}
-                handleClickPublish={handleClickPublish}
-              />
+              <Show when={bookmarks.kind10003.length > 0} fallback={"no data"}>
+                <Kind10003
+                  bookmarks={bookmarks}
+                  handleClickEvent={handleClickEvent}
+                  handleClickPublish={handleClickPublish}
+                />
+              </Show>
             </BkmBox>
           </Match>
           <Match when={selectedTab() === "kind30003"}>
             <BkmBox kind="30003">
-              <Kind30003
-                bookmarks={bookmarks}
-                handleClickEvent={handleClickEvent}
-                handleClickPublish={handleClickPublish}
-              />
+              <Show when={bookmarks.kind10003.length > 0} fallback={"no data"}>
+                <Kind30003
+                  bookmarks={bookmarks}
+                  handleClickEvent={handleClickEvent}
+                  handleClickPublish={handleClickPublish}
+                />
+              </Show>
             </BkmBox>
           </Match>
           <Match when={selectedTab() === "kind30001"}>
             <BkmBox kind="30001">
-              <Kind30001
-                bookmarks={bookmarks}
-                handleClickEvent={handleClickEvent}
-                handleClickPublish={handleClickPublish}
-              />
+              <Show when={bookmarks.kind10003.length > 0} fallback={"no data"}>
+                <Kind30001
+                  bookmarks={bookmarks}
+                  handleClickEvent={handleClickEvent}
+                  handleClickPublish={handleClickPublish}
+                />
+              </Show>
             </BkmBox>
           </Match>
         </Switch>

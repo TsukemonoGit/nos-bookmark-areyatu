@@ -10,7 +10,6 @@ import {
   uniq,
   verify,
 } from "rx-nostr";
-
 import { extensionRelays, relaySearchRelays } from "./relays";
 import { decode, npubEncode, nsecEncode } from "./nip19";
 import { getPublicKey } from "./utils";
@@ -258,10 +257,10 @@ export async function publishEventToRelay(
   relay: string[],
   nsec?: Uint8Array
 ): Promise<Map<string, boolean>> {
-  // if (relay.length <= 0) {
-  //   //todo 書き込みリレー見つかってないときどうする
-  //   throw Error;
-  // }
+  if (relay.length <= 0) {
+    //todo 書き込みリレー見つかってないときどうする
+    throw Error("Relay is not set");
+  }
   const eventParams: EventParameters = {
     created_at: Math.floor(Date.now() / 1000),
     content: event.content,
@@ -282,27 +281,21 @@ export async function publishEventToRelay(
   const rxNostr = createRxNostr({
     signer: signer,
   });
-  //const rxNostr = createRxNostr();
+
   const publishEvent = await signer.signEvent(eventParams); //error
   console.log("signedEvent:", publishEvent);
 
-  //------pubkeyのnip07認証画面は出るけどsignの認証画面は出ない
-  //------nsecでは署名成功
-  //------------------------------------------------------
+  try {
+    const result = await sendEventToRelay(rxNostr, publishEvent, relay);
 
-  //------------------------------------------------------
+    console.log("送信結果:", result);
+    return result;
+  } catch (error) {
+    console.error("イベントの送信中にエラーが発生しました:", error);
+    throw Error;
+  }
 
-  // try {
-  //   //const result = await sendEventToRelay(rxNostr, eventParams, relay);
-  //   const result=new Map;
-  //   //  console.log("送信結果:", result);
-  //   return result;
-  // } catch (error) {
-  //   console.error("イベントの送信中にエラーが発生しました:", error);
-  //   throw Error;
-  // }
-
-  return new Map();
+  // return new Map();
 }
 
 // rxNostr.sendをPromise化する関数
