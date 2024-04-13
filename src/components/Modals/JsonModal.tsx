@@ -37,6 +37,7 @@ export default function JsonModal(props: {
       onClose={props.handleModalClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      sx={{ color: theme.palette.text.primary }}
     >
       <Box
         sx={{
@@ -45,18 +46,19 @@ export default function JsonModal(props: {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: "80vw",
+          maxWidth: "800px",
           height: "70vh",
           bgcolor: theme.palette.background.paper,
           border: "2px solid #000",
           boxShadow: "24px",
           p: 4,
-          maxWidth: "80vw",
+
           maxHeight: "70vh",
           borderRadius: 2,
         }}
       >
         <Grid container spacing={2} sx={{ height: "100%" }}>
-          <Grid item>
+          <Grid item xs={12}>
             <Typography
               variant="h4"
               component="div"
