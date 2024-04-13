@@ -1,6 +1,15 @@
 import { JSXElement, Match, Switch, createSignal } from "solid-js";
 import { BkmProps, BookmarkEventList } from "../libs/nostrFunctions";
-import { Box, ToggleButton, ToggleButtonGroup } from "@suid/material";
+import {
+  Box,
+  List,
+  ListItem,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  useTheme,
+} from "@suid/material";
 import Kind10003 from "./Kind10003";
 import Kind30001 from "./Kind30001";
 import Kind30003 from "./Kind30003";
@@ -35,24 +44,28 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
 
   return (
     <>
-      <h3>The total number of bookmarks found for each type</h3>
-      <ul>
-        <li>kind10003:{bookmarks.kind10003.length}</li>
-        <li>
-          kind30003:
-          {Object.values(bookmarks.kind30003).reduce(
-            (acc, curr) => acc + curr.length,
-            0
-          )}
-        </li>
-        <li>
-          kind30001:
-          {Object.values(bookmarks.kind30001).reduce(
-            (acc, curr) => acc + curr.length,
-            0
-          )}
-        </li>
-      </ul>
+      <Stack>
+        <Typography variant="h4">
+          The total number of bookmarks found for each type
+        </Typography>
+        <List>
+          <ListItem>kind10003:{bookmarks.kind10003.length}</ListItem>
+          <ListItem>
+            kind30003:
+            {Object.values(bookmarks.kind30003).reduce(
+              (acc, curr) => acc + curr.length,
+              0
+            )}
+          </ListItem>
+          <ListItem>
+            kind30001:
+            {Object.values(bookmarks.kind30001).reduce(
+              (acc, curr) => acc + curr.length,
+              0
+            )}
+          </ListItem>
+        </List>
+      </Stack>
       <Box
         sx={{
           display: "flex",
