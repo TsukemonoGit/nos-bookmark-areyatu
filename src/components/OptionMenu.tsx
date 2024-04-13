@@ -20,7 +20,8 @@ export default function OptionMenu(props: Props) {
 
   return (
     <Box
-      m={4}
+      mx={2}
+      my={4}
       p={2}
       // border={4}
       //borderColor={useTheme().palette.divider}
