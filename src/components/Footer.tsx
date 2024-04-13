@@ -13,6 +13,13 @@ import {
 } from "@suid/material";
 
 export function Footer() {
+  const theme = useTheme();
+  // ダークモードの場合、別の色を使用する
+  const backgroundColor =
+    theme.palette.mode === "dark"
+      ? theme.palette.grey[900]
+      : theme.palette.grey[200];
+
   return (
     <footer>
       <Container
@@ -20,7 +27,7 @@ export function Footer() {
         sx={{
           mt: 8,
           mb: 2,
-          bgcolor: (theme: Theme) => theme.palette.grey[100],
+          bgcolor: backgroundColor,
         }}
       >
         <Divider />
