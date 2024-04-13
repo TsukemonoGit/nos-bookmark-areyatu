@@ -112,8 +112,8 @@ export function Content(): JSXElement {
       }
       const bookmarkEventList = await getBookmarkEventList(
         decode(pubkey()).data as string,
-        userRelayList.read
-      );
+        Array.from(new Set([...userRelayList.read, ...userRelayList.write]))
+      ); //できるだけリレー増やすためにリードもライトも含める
       if (
         bookmarkEventList.kind10003.length <= 0 &&
         Object.keys(bookmarkEventList.kind30001).length <= 0 &&

@@ -115,7 +115,15 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
           </Match>
           <Match when={selectedTab() === "kind30003"}>
             <BkmBox kind="30003">
-              <Show when={bookmarks.kind10003.length > 0} fallback={"no data"}>
+              <Show
+                when={
+                  Object.values(bookmarks.kind30003).reduce(
+                    (acc, curr) => acc + curr.length,
+                    0
+                  ) > 0
+                }
+                fallback={"no data"}
+              >
                 <Kind30003
                   bookmarks={bookmarks}
                   handleClickEvent={handleClickEvent}
@@ -126,7 +134,15 @@ export default function Bookemarks({ bookmarks, handleClickPublish }: Props) {
           </Match>
           <Match when={selectedTab() === "kind30001"}>
             <BkmBox kind="30001">
-              <Show when={bookmarks.kind10003.length > 0} fallback={"no data"}>
+              <Show
+                when={
+                  Object.values(bookmarks.kind30001).reduce(
+                    (acc, curr) => acc + curr.length,
+                    0
+                  ) > 0
+                }
+                fallback={"no data"}
+              >
                 <Kind30001
                   bookmarks={bookmarks}
                   handleClickEvent={handleClickEvent}
