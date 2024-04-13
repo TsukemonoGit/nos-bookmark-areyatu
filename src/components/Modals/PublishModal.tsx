@@ -28,6 +28,7 @@ export default function PublishModal(props: {
       onClose={() => props.handleModalClose()}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      sx={{ color: theme.palette.text.primary }}
     >
       <Box
         sx={{
@@ -38,6 +39,7 @@ export default function PublishModal(props: {
           width: "80vw",
           height: "70vh",
           bgcolor: theme.palette.background.paper,
+
           border: "2px solid #000",
           boxShadow: "24px",
           p: 4,

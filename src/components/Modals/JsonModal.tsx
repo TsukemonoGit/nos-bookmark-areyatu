@@ -37,6 +37,7 @@ export default function JsonModal(props: {
       onClose={props.handleModalClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      sx={{ color: theme.palette.text.primary }}
     >
       <Box
         sx={{

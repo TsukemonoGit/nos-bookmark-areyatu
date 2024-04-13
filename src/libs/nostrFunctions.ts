@@ -153,12 +153,12 @@ export const getBookmarkEventList = async (
 ): Promise<BookmarkEventList> => {
   let res: BookmarkEventList = { kind10003: [], kind30001: {}, kind30003: {} };
   let timeoutId: NodeJS.Timeout;
-  const timeoutMillis: number = 2000;
+  const timeoutMillis: number = 5000;
   const rxNostr = createRxNostr();
 
   //探すように有名どころのリレーとかも足す。
   const uniqueRelays = Array.from(
-    new Set([...readRelayList, ...extensionRelays])
+    new Set([...readRelayList, ...(await getOnlineRelays())])
   );
   rxNostr.setDefaultRelays(uniqueRelays);
 
@@ -360,5 +360,20 @@ export function checkPubkey(str: string): {
     return res;
   } catch (error) {
     throw Error;
+  }
+}
+
+export async function getOnlineRelays(): Promise<string[]> {
+  try {
+    const response = await fetch("https://api.nostr.watch/v1/online");
+    if (!response.ok) {
+      throw new Error("Failed to fetch relay list");
+    }
+    const data: string[] = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching relay list:", error);
+    return extensionRelays;
   }
 }
