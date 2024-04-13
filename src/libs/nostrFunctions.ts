@@ -62,7 +62,7 @@ export const getUserRelayList = async (pubkey: string): Promise<RelayList> => {
   const rxNostr = createRxNostr();
   rxNostr.setDefaultRelays(relaySearchRelays);
 
-  const rxReq = createRxBackwardReq();
+  const rxReq = createRxBackwardReq("sup");
   const observable = rxNostr.use(rxReq).pipe(uniq(), verify());
 
   await new Promise<RelayList>((resolve, reject) => {
@@ -149,57 +149,64 @@ export const getUserRelayList = async (pubkey: string): Promise<RelayList> => {
 
 export const getBookmarkEventList = async (
   pubkey: string,
-  readRelayList: string[]
+  readRelayList: string[],
+  maxRelayLength: number
 ): Promise<BookmarkEventList> => {
   let res: BookmarkEventList = { kind10003: [], kind30001: {}, kind30003: {} };
-  let timeoutId: NodeJS.Timeout;
-  const timeoutMillis: number = 5000;
+
+  const timeoutMillis: number = 1000; // タイムアウト時間（ミリ秒）
+  const chunkSize = 30; // 一度に接続するrelayの数
+  const uniqueRelays = readRelayList.slice(0, maxRelayLength);
+  const totalChunks = Math.ceil(uniqueRelays.length / chunkSize);
+
+  for (let i = 0; i < totalChunks; i++) {
+    const startIdx = i * chunkSize;
+    const endIdx = Math.min((i + 1) * chunkSize, uniqueRelays.length);
+    const chunkRelays = uniqueRelays.slice(startIdx, endIdx);
+
+    await processChunk(pubkey, chunkRelays, res, timeoutMillis);
+  }
+
+  //時間順に並べ替えてから返す
+  res = sortBookmarkEventList(res);
+  return res;
+};
+
+const processChunk = async (
+  pubkey: string,
+  chunkRelays: string[],
+  res: BookmarkEventList,
+  timeoutMillis: number
+) => {
   const rxNostr = createRxNostr();
+  rxNostr.setDefaultRelays(chunkRelays);
 
-  //探すように有名どころのリレーとかも足す。
-  const uniqueRelays = Array.from(
-    new Set([...readRelayList, ...(await getOnlineRelays())])
-  );
-  rxNostr.setDefaultRelays(uniqueRelays);
-
-  const rxReq = createRxBackwardReq();
+  const rxReq = createRxBackwardReq("sub");
   const observable = rxNostr.use(rxReq).pipe(uniq(), verify());
 
-  await new Promise<BookmarkEventList>((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     const handleTimeout = () => {
-      console.log("Timeout reached");
+      console.log("Chunk processing timeout reached!");
       subscription.unsubscribe(); // タイムアウト時に購読を解除
-      resolve(res);
+      rxNostr.dispose();
+      resolve();
     };
 
     const observer = {
       next: (packet: EventPacket) => {
-        console.log("Received:", packet);
-        if (packet.event.kind === 10003) {
-          res.kind10003.push(packet);
-        } else if (packet.event.kind === 30003) {
-          const id = packet.event.tags.find((item) => item[0] == "d");
-          if (id) {
-            if (!res.kind30003[id[1]]) res.kind30003[id[1]] = [];
-            res.kind30003[id[1]].push(packet);
-          }
-        } else if (packet.event.kind === 30001) {
-          const id = packet.event.tags.find((item) => item[0] == "d");
-          if (id) {
-            if (!res.kind30001[id[1]]) res.kind30001[id[1]] = [];
-            res.kind30001[id[1]].push(packet);
-          }
-        }
+        processPacket(packet, res);
       },
       complete: () => {
-        console.log("Completed!");
+        console.log("Chunk processing completed!");
         clearTimeout(timeoutId); // 購読が完了したらタイムアウトのタイマーを解除
-        resolve(res);
+        rxNostr.dispose();
+        resolve();
       },
       error: (error: any) => {
-        console.error("Error:", error);
+        console.error("Chunk processing error:", error);
         clearTimeout(timeoutId); // エラーが発生したらタイムアウトのタイマーを解除
-        reject(error);
+        rxNostr.dispose();
+        resolve();
       },
     };
 
@@ -207,17 +214,43 @@ export const getBookmarkEventList = async (
     const subscription = observable.subscribe(observer);
 
     // タイムアウトのタイマーを設定
-    timeoutId = setTimeout(handleTimeout, timeoutMillis);
+    const timeoutId = setTimeout(handleTimeout, timeoutMillis);
 
     rxReq.emit({
       kinds: [10003, 30001, 30003],
       authors: [pubkey],
       until: now(),
-    }); // 購読し始めてからイベントを受信するためにemitは後
+    });
   });
-  //時間順に並べ替えてから返す
-  res = sortBookmarkEventList(res);
-  return res;
+};
+
+const processPacket = (packet: EventPacket, res: BookmarkEventList) => {
+  if (
+    packet.event.kind === 10003 &&
+    !res.kind10003.find((item) => item.event.id === packet.event.id)
+  ) {
+    res.kind10003.push(packet);
+  } else if (packet.event.kind === 30003) {
+    const id = packet.event.tags.find((item) => item[0] == "d");
+    if (id) {
+      if (!res.kind30003[id[1]]) res.kind30003[id[1]] = [];
+      if (
+        !res.kind30003[id[1]].find((item) => item.event.id === packet.event.id)
+      ) {
+        res.kind30003[id[1]].push(packet);
+      }
+    }
+  } else if (packet.event.kind === 30001) {
+    const id = packet.event.tags.find((item) => item[0] == "d");
+    if (id) {
+      if (!res.kind30001[id[1]]) res.kind30001[id[1]] = [];
+      if (
+        !res.kind30001[id[1]].find((item) => item.event.id === packet.event.id)
+      ) {
+        res.kind30001[id[1]].push(packet);
+      }
+    }
+  }
 };
 
 export function sortBookmarkEventList(
@@ -374,6 +407,6 @@ export async function getOnlineRelays(): Promise<string[]> {
     return data;
   } catch (error) {
     console.error("Error fetching relay list:", error);
-    return extensionRelays;
+    throw Error;
   }
 }

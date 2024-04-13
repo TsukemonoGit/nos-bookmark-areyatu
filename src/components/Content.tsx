@@ -13,6 +13,7 @@ import {
   publishEventToRelay,
   checkPubkey,
   NostrEvent,
+  getOnlineRelays,
 } from "../libs/nostrFunctions";
 //---------------------------------------------------------------------------
 //てすとよう
@@ -20,6 +21,8 @@ import {
 import PublishModal from "./Modals/PublishModal";
 import { decode } from "../libs/nip19";
 import Toast from "./Modals/Toast";
+import OptionMenu from "./OptionMenu";
+import { extensionRelays } from "../libs/relays";
 //---------------------------------------------------------------------------
 const nip07signer = new NDKNip07Signer();
 
@@ -29,6 +32,7 @@ export function Content(): JSXElement {
   const [publishEvent, setPublishEvent] = createSignal<NostrEvent | null>(null);
   const [publishModalOpen, setPublishModalOpen] = createSignal(false);
   const [nowProgress, setNowProgress] = createSignal(false);
+  const [apiRelays, setApiRelays] = createSignal<string[]>([]);
   const [userRelays, setUserRelays] = createStore<RelayList>({
     read: [],
     write: [],
@@ -50,6 +54,8 @@ export function Content(): JSXElement {
     type: "info",
   });
 
+  const [optionValue, setOptionValue] = createSignal<number>(0);
+  const relayLength = [30, 60, 200];
   //---------------------------------------------------------------------------
   // てすとよう
   //ファイルを同期で読み込む
@@ -81,6 +87,7 @@ export function Content(): JSXElement {
       kind30003: {},
       kind30001: {},
     });
+
     try {
       //-----------------------
       const res: { npubkey: string; nsecArray?: Uint8Array | undefined } =
@@ -100,7 +107,24 @@ export function Content(): JSXElement {
       setNowProgress(false);
       return;
     }
-
+    if (optionValue() > 0 && apiRelays().length <= 0) {
+      try {
+        const tmpApiRelays = await getOnlineRelays();
+        if (tmpApiRelays.length > 0) {
+          setApiRelays(tmpApiRelays);
+        }
+      } catch (error) {
+        console.log("failed to get online relays");
+        setToastState({
+          message:
+            "Failed to get online relays. \n Please check the option to 'ひかえめ' or wait for a while and retry",
+          type: "error",
+        });
+        setToastOpen(true);
+        setNowProgress(false);
+        return;
+      }
+    }
     try {
       const userRelayList = await getUserRelayList(
         decode(pubkey()).data as string
@@ -110,9 +134,18 @@ export function Content(): JSXElement {
       if (userRelayList.read.length <= 0) {
         throw Error("Failed to get your relays");
       }
+      const totalRelay = Array.from(
+        new Set([
+          ...userRelayList.read,
+          ...userRelayList.write,
+          ...extensionRelays,
+          ...apiRelays(),
+        ])
+      );
       const bookmarkEventList = await getBookmarkEventList(
         decode(pubkey()).data as string,
-        Array.from(new Set([...userRelayList.read, ...userRelayList.write]))
+        totalRelay,
+        optionValue() < 3 ? relayLength[optionValue()] : totalRelay.length
       ); //できるだけリレー増やすためにリードもライトも含める
       if (
         bookmarkEventList.kind10003.length <= 0 &&
@@ -204,11 +237,20 @@ export function Content(): JSXElement {
   const handleToastClose = () => {
     setToastOpen(false);
   };
+  const optionHandleChange = (e: Event) => {
+    setOptionValue(parseInt((e.target as HTMLInputElement).value));
+
+    console.log(optionValue());
+  };
 
   //------------------------------------------------------------
   return (
     <main>
       <Container maxWidth="lg">
+        <OptionMenu
+          optionHandleChange={optionHandleChange}
+          optionValue={optionValue}
+        />
         <SetPubkey
           pubkey={pubkey}
           onChange={handleChange}
