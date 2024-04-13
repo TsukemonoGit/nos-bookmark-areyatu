@@ -69,6 +69,9 @@ export function Content(): JSXElement {
   };
 
   const handleSubmit = async (e: Event) => {
+    if (nowProgress()) {
+      return;
+    }
     console.log(pubkey().length);
     if (!pubkey() || pubkey().length < 60) {
       setToastState({ message: "Check your public key", type: "error" });
@@ -171,8 +174,12 @@ export function Content(): JSXElement {
   };
 
   const handleGetPubkey = async (e: Event) => {
-    setNowProgress(true);
+    if (nowProgress()) {
+      return;
+    }
+
     try {
+      setNowProgress(true);
       let NDKUser: NDKUser = await nip07signer.user();
       console.log(NDKUser.npub);
       setPubkey(NDKUser.npub);
@@ -185,6 +192,9 @@ export function Content(): JSXElement {
   };
 
   const handleClickPublish = (nosEvent: NostrEvent) => {
+    if (nowProgress()) {
+      return;
+    }
     console.log(nosEvent);
     setPublishEvent(nosEvent);
     setPublishModalOpen(true);
