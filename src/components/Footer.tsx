@@ -9,16 +9,12 @@ import {
   List,
   ListItem,
   Theme,
+  alpha,
   useTheme,
 } from "@suid/material";
 
 export function Footer() {
   const theme = useTheme();
-  // ダークモードの場合、別の色を使用する
-  const backgroundColor =
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[900]
-      : theme.palette.grey[200];
 
   return (
     <footer>
@@ -27,7 +23,7 @@ export function Footer() {
         sx={{
           mt: 8,
           mb: 2,
-          bgcolor: backgroundColor,
+          bgcolor: `${alpha(useTheme().palette.divider, 0.1)}`,
         }}
       >
         <Divider />
@@ -49,9 +45,10 @@ export function Footer() {
             underline="none"
             sx={{
               p: 2,
+              fontWeight: "bold",
             }}
           >
-            source
+            SOURCE
           </Link>
           <Link
             href={"https://github.com/nostr-protocol/nips/blob/master/51.md"}
@@ -61,6 +58,7 @@ export function Footer() {
             underline="none"
             sx={{
               p: 2,
+              fontWeight: "bold",
             }}
           >
             NIP-51

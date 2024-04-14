@@ -8,6 +8,7 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  alpha,
   useTheme,
 } from "@suid/material";
 import { Accessor } from "solid-js";
@@ -25,7 +26,7 @@ export default function OptionMenu(props: Props) {
       p={2}
       // border={4}
       //borderColor={useTheme().palette.divider}
-      bgcolor={useTheme().palette.divider}
+      bgcolor={alpha(useTheme().palette.primary.main, 0.1)}
       sx={{
         borderRadius: "10px",
       }}
