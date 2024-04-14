@@ -319,10 +319,10 @@ export async function publishEventToRelay(
   // if (nsec !== undefined) {
   //   newEvent.pubkey = getPublicKey(nsec);
   // }
-  console.log("nsec:", nsec);
+  //console.log("nsec:", nsec);
   const signer =
     nsec !== undefined ? seckeySigner(nsecEncode(nsec)) : nip07Signer();
-  console.log(signer);
+  //console.log(signer);
   const rxNostr = createRxNostr({
     signer: signer,
   });
