@@ -22,7 +22,6 @@ export function Footer() {
         maxWidth="lg"
         sx={{
           mt: 8,
-          mb: 2,
           bgcolor: `${alpha(useTheme().palette.divider, 0.1)}`,
         }}
       >
@@ -44,7 +43,8 @@ export function Footer() {
             color="primary"
             underline="none"
             sx={{
-              p: 2,
+              py: 2,
+              px: 1,
               fontWeight: "bold",
             }}
           >
@@ -57,7 +57,8 @@ export function Footer() {
             color="primary"
             underline="none"
             sx={{
-              p: 2,
+              py: 2,
+              px: 1,
               fontWeight: "bold",
             }}
           >
