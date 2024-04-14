@@ -40,7 +40,7 @@ export function Footer() {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            gap: "2px",
+            gap: [2, 4, 4],
           }}
         >
           <IconButton
@@ -84,7 +84,7 @@ export function Footer() {
             id="nostr-zap-target"
             aria-label="Zapボタン"
             data-npub="npub1sjcvg64knxkrt6ev52rywzu9uzqakgy8ehhk8yezxmpewsthst6sw3jqcw"
-            data-relays="wss://nostr.mutinywallet.com,wss://nos.lol,wss://nostr.wine,wss://relay.nostr.band"
+            data-relays="wss://nostr.mutinywallet.com,wss://relayable.org,wss://nos.lol,wss://nostr.wine,wss://relay.nostr.band,wss://yabu.me"
             data-note-id="note160q4w6ar27qjpwrfxhnwv5ra3hpj552m230kau4vg5sf3d9das3q0hvglm"
           >
             <Stack
@@ -94,6 +94,37 @@ export function Footer() {
               }}
             />
           </IconButton>
+          {/* <IconButton
+            aria-label="のすとびうあへのリンク"
+            onClick={() => {
+              window.open(
+                "https://nostviewstr.vercel.app/",
+                "_blank",
+                "noreferrer"
+              );
+            }}
+            sx={{
+              borderRadius: "10px",
+              fontSize: "medium",
+              py: 2,
+              px: 1,
+              fontWeight: "bold",
+            }}
+          >
+            NostViewstr
+          </IconButton> */}
+          {/* <Stack
+            sx={{
+              borderRadius: "10px",
+              fontSize: "smaller",
+              py: 2,
+              px: 1,
+              fontWeight: "bold",
+              color: useTheme().palette.action.active,
+            }}
+          >
+            (参考)
+          </Stack>
           <IconButton
             aria-label="NIP-51へのリンク"
             onClick={() => {
@@ -113,6 +144,22 @@ export function Footer() {
           >
             NIP-51
           </IconButton>
+
+          <IconButton
+            aria-label="nostr.watchへのリンク"
+            onClick={() => {
+              window.open("https://nostr.watch/", "_blank", "noreferrer");
+            }}
+            sx={{
+              borderRadius: "10px",
+              fontSize: "medium",
+              py: 2,
+              px: 1,
+              fontWeight: "bold",
+            }}
+          >
+            nostr.watch
+          </IconButton> */}
         </Box>
       </Container>
     </footer>
