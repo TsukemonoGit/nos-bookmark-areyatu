@@ -261,7 +261,19 @@ export function sortBookmarkEventList(
     kind30003: {},
     kind30001: {},
   };
+  // kind30003のIDをソートして新しいオブジェクトに追加
+  Object.keys(bookmarkEventList.kind30003)
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((id) => {
+      sortedBookmarkEventList.kind30003[id] = bookmarkEventList.kind30003[id];
+    });
 
+  // kind30001のIDをソートして新しいオブジェクトに追加
+  Object.keys(bookmarkEventList.kind30001)
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((id) => {
+      sortedBookmarkEventList.kind30001[id] = bookmarkEventList.kind30001[id];
+    });
   // kind30003の各配列をcreated_atの値で並べ替える
   Object.keys(bookmarkEventList.kind30003).forEach((id) => {
     sortedBookmarkEventList.kind30003[id] = sortEventsByCreatedAt(
