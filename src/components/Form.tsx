@@ -51,7 +51,11 @@ export default function Form({
     if (bool) {
       if (message().trim() !== "") {
         // ここでメッセージを送信する処理を行う
-        const mes = "from\n" + name() + "\n\nmessage\n" + message();
+        const mes =
+          "[NostrBookmarkRecoveryTool]\nfrom\n" +
+          name() +
+          "\n\nmessage\n" +
+          message();
         setNowProgress(true);
         try {
           if (sendpub) {
@@ -104,11 +108,15 @@ export default function Form({
           flexDirection="column"
           alignItems="center"
         >
-          <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
+          <Typography
+            sx={{ fontSize: 16, textAlign: "center" }}
+            color="text.secondary"
+            gutterBottom
+          >
             {"Send a message to the author"}
           </Typography>
           <Typography
-            sx={{ fontSize: 14, maxWidth: "90%" }}
+            sx={{ fontSize: 14, maxWidth: "90%", textAlign: "center" }}
             color="text.secondary"
             gutterBottom
           >
