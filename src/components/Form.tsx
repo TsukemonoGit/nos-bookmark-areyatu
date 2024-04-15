@@ -50,24 +50,27 @@ export default function Form({
 
         setNowProgress(true);
         try {
-          const result = await sendMessage(
-            unwrap(message()),
-            process.env.VITE_FORMSEND_PUBHEX
-          );
-          const hasSuccess = Array.from(result.values()).some(
-            (isSuccess) => isSuccess
-          );
+          if (process.env.VITE_FORMSEND_PUBHEX) {
+            const result = await sendMessage(
+              unwrap(message()),
+              process.env.VITE_FORMSEND_PUBHEX
+            );
+            const hasSuccess = Array.from(result.values()).some(
+              (isSuccess) => isSuccess
+            );
 
-          setToastState(
-            hasSuccess
-              ? { type: "success", message: "Thank you for reaching out!" }
-              : {
-                  type: "error",
-                  message:
-                    "Failed to send your message. Please try again later.",
-                }
-          );
-          setToastOpen(true);
+            setToastState(
+              hasSuccess
+                ? { type: "success", message: "Thank you for reaching out!" }
+                : {
+                    type: "error",
+                    message:
+                      "Failed to send your message. Please try again later.",
+                  }
+            );
+            setToastOpen(true);
+          }
+          throw error;
         } catch (error) {
           setToastState({
             type: "error",
