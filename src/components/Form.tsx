@@ -67,8 +67,9 @@ export default function Form({
                   }
             );
             setToastOpen(true);
+          } else {
+            throw error;
           }
-          throw error;
         } catch (error) {
           setToastState({
             type: "error",
