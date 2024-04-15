@@ -4,6 +4,8 @@ export default function Head() {
   return (
     <MetaProvider>
       <div class="Home">
+        <Title>Bookmark Recovery Tool</Title>
+        <Link rel="icon" href="./images/favicon.svg" />
         <Meta property="og:type" content="website" />
         <Meta
           property="og:url"
