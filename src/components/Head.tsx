@@ -13,7 +13,7 @@ export default function Head() {
         />
         <Meta property="og:title" content="Bookmark Recovery Tool" />
         <Meta
-          property="description"
+          property="og:description"
           content="A nostr tool that searches through multiple relays for lost bookmarks and rewrite the data from before they were lost."
         />
         <Meta
