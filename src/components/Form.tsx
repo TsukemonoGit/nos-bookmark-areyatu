@@ -18,6 +18,7 @@ import {
 } from "@suid/material";
 import { unwrap } from "solid-js/store";
 import { sendMessage } from "../libs/nostrFunctions";
+import { sendpub } from "../libs/pubkey";
 
 export default function Form({
   setToastState,
@@ -50,11 +51,8 @@ export default function Form({
 
         setNowProgress(true);
         try {
-          if (process.env.VITE_FORMSEND_PUBHEX) {
-            const result = await sendMessage(
-              unwrap(message()),
-              process.env.VITE_FORMSEND_PUBHEX
-            );
+          if (sendpub) {
+            const result = await sendMessage(unwrap(message()), sendpub);
             const hasSuccess = Array.from(result.values()).some(
               (isSuccess) => isSuccess
             );
