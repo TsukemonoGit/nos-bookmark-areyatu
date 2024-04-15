@@ -104,8 +104,16 @@ export default function Form({
           flexDirection="column"
           alignItems="center"
         >
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
             {"Send a message to the author"}
+          </Typography>
+          <Typography
+            sx={{ fontSize: 14, maxWidth: "90%" }}
+            color="text.secondary"
+            gutterBottom
+          >
+            Your message will be sent via encrypted DM using a randomly
+            generated key.
           </Typography>
           <Grid
             item
