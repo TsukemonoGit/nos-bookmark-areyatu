@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nostr-dev-kit/ndk": "^2.7.1",
+    "@solidjs/meta": "^0.29.3",
     "@suid/icons-material": "*",
     "@suid/material": "*",
     "nostr-login": "^1.0.18",

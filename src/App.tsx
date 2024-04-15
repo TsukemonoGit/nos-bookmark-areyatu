@@ -10,6 +10,7 @@ import { Content } from "./components/Content";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { createEffect, createMemo } from "solid-js";
+import Head from "./components/Head";
 
 export default function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -32,23 +33,26 @@ export default function App() {
   console.log(prefersDarkMode());
 
   return (
-    <ThemeProvider theme={theme()}>
-      <Box
-        sx={{
-          bgcolor: useTheme().palette.background.paper,
-          position: "fixed",
-          left: 0,
-          top: 0,
-          width: "100vw",
-          height: "100vh",
-          overflowY: "auto",
-          color: useTheme().palette.text.primary,
-        }}
-      >
-        <Header />
-        <Content />
-        <Footer />
-      </Box>
-    </ThemeProvider>
+    <>
+      <Head />
+      <ThemeProvider theme={theme()}>
+        <Box
+          sx={{
+            bgcolor: useTheme().palette.background.paper,
+            position: "fixed",
+            left: 0,
+            top: 0,
+            width: "100vw",
+            height: "100vh",
+            overflowY: "auto",
+            color: useTheme().palette.text.primary,
+          }}
+        >
+          <Header />
+          <Content />
+          <Footer />
+        </Box>
+      </ThemeProvider>
+    </>
   );
 }
