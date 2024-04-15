@@ -49,21 +49,29 @@ export default function Form({
         // ここでメッセージを送信する処理を行う
 
         setNowProgress(true);
+        try {
+          const result = await sendMessage(unwrap(message()));
+          const hasSuccess = Array.from(result.values()).some(
+            (isSuccess) => isSuccess
+          );
 
-        const result = await sendMessage(unwrap(message()));
-        const hasSuccess = Array.from(result.values()).some(
-          (isSuccess) => isSuccess
-        );
-
-        setToastState(
-          hasSuccess
-            ? { type: "success", message: "Thank you for reaching out!" }
-            : {
-                type: "error",
-                message: "Failed to send your message. Please try again later.",
-              }
-        );
-        setToastOpen(true);
+          setToastState(
+            hasSuccess
+              ? { type: "success", message: "Thank you for reaching out!" }
+              : {
+                  type: "error",
+                  message:
+                    "Failed to send your message. Please try again later.",
+                }
+          );
+          setToastOpen(true);
+        } catch (error) {
+          setToastState({
+            type: "error",
+            message: "Failed to send your message. Please try again later.",
+          });
+          setToastOpen(true);
+        }
       }
     }
     setNowProgress(false);

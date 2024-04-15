@@ -423,36 +423,41 @@ export async function getOnlineRelays(): Promise<string[]> {
     throw Error;
   }
 }
+//vite  import.meta.env.VITE_FORMSEND_PUBHEX
 
 export async function sendMessage(message: string) {
-  const sk = generateSecretKey();
-  const pk = getPublicKey(sk);
-  const encryptedMessage = await encrypt(
-    sk,
-    import.meta.env.VITE_FORMSEND_PUBHEX,
-    message
-  );
+  if (process.env.VITE_FORMSEND_PUBHEX) {
+    const sk = generateSecretKey();
+    const pk = getPublicKey(sk);
+    const encryptedMessage = await encrypt(
+      sk,
+      process.env.VITE_FORMSEND_PUBHEX,
+      message
+    );
 
-  const ev = {
-    kind: 4,
-    created_at: Math.floor(Date.now() / 1000),
-    tags: [["p", import.meta.env.VITE_FORMSEND_PUBHEX]],
+    const ev = {
+      kind: 4,
+      created_at: Math.floor(Date.now() / 1000),
+      tags: [["p", process.env.VITE_FORMSEND_PUBHEX]],
 
-    content: encryptedMessage,
-    pubkey: pk,
-  };
-  const signer = seckeySigner(nsecEncode(sk));
-  //console.log(signer);
-  const rxNostr = createRxNostr({
-    signer: signer,
-  });
-  try {
-    const result = await sendEventToRelay(rxNostr, ev, feedbackRelay);
+      content: encryptedMessage,
+      pubkey: pk,
+    };
+    const signer = seckeySigner(nsecEncode(sk));
+    //console.log(signer);
+    const rxNostr = createRxNostr({
+      signer: signer,
+    });
+    try {
+      const result = await sendEventToRelay(rxNostr, ev, feedbackRelay);
 
-    console.log("送信結果:", result);
-    return result;
-  } catch (error) {
-    console.error("イベントの送信中にエラーが発生しました:", error);
+      console.log("送信結果:", result);
+      return result;
+    } catch (error) {
+      console.error("イベントの送信中にエラーが発生しました:", error);
+      throw Error;
+    }
+  } else {
     throw Error;
   }
 }
