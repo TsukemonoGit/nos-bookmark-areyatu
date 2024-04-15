@@ -10,6 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@noble/ciphers": "^0.5.2",
     "@nostr-dev-kit/ndk": "^2.7.1",
     "@solidjs/meta": "^0.29.3",
     "@suid/icons-material": "*",

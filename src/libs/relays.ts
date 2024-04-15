@@ -48,3 +48,11 @@ export const extensionRelays = [
   "wss://nostr.einundzwanzig.space",
   "wss://relay.nostr.net",
 ];
+
+//feedback用のリレー
+export const feedbackRelay = [
+  "wss://nos.lol",
+  "wss://relay.nostr.wirednet.jp",
+  "wss://relayable.org",
+  "wss://relay.nostr.band/",
+];

@@ -10,10 +10,11 @@ import {
   uniq,
   verify,
 } from "rx-nostr";
-import { extensionRelays, relaySearchRelays } from "./relays";
+import { extensionRelays, feedbackRelay, relaySearchRelays } from "./relays";
 import { decode, npubEncode, nsecEncode } from "./nip19";
 import { getPublicKey } from "./utils";
 import { NDKNip07Signer } from "@nostr-dev-kit/ndk";
+import { encrypt, generateSecretKey } from "./nip04";
 export interface RelayList {
   read: string[];
   write: string[];
@@ -419,6 +420,40 @@ export async function getOnlineRelays(): Promise<string[]> {
     return data;
   } catch (error) {
     console.error("Error fetching relay list:", error);
+    throw Error;
+  }
+}
+//vite  import.meta.env.VITE_FORMSEND_PUBHEX
+
+export async function sendMessage(message: string, pubhex: string) {
+  if (pubhex) {
+    const sk = generateSecretKey();
+    const pk = getPublicKey(sk);
+    const encryptedMessage = await encrypt(sk, pubhex, message);
+
+    const ev = {
+      kind: 4,
+      created_at: Math.floor(Date.now() / 1000),
+      tags: [["p", pubhex]],
+
+      content: encryptedMessage,
+      pubkey: pk,
+    };
+    const signer = seckeySigner(nsecEncode(sk));
+    //console.log(signer);
+    const rxNostr = createRxNostr({
+      signer: signer,
+    });
+    try {
+      const result = await sendEventToRelay(rxNostr, ev, feedbackRelay);
+
+      console.log("送信結果:", result);
+      return result;
+    } catch (error) {
+      console.error("イベントの送信中にエラーが発生しました:", error);
+      throw Error;
+    }
+  } else {
     throw Error;
   }
 }

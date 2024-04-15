@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Container } from "@suid/material";
+import { Box, CircularProgress, Container, Divider } from "@suid/material";
 import { createStore, unwrap } from "solid-js/store";
 import SetPubkey from "./SetPubkey";
 import Bookemarks from "./Bookmarks";
@@ -23,15 +23,20 @@ import { decode } from "../libs/nip19";
 import Toast from "./Modals/Toast";
 import OptionMenu from "./OptionMenu";
 import { extensionRelays } from "../libs/relays";
+import Form from "./Form";
 //---------------------------------------------------------------------------
 const nip07signer = new NDKNip07Signer();
 
-export function Content(): JSXElement {
+export function Content({
+  setToastState,
+  setToastOpen,
+  setNowProgress,
+  nowProgress,
+}: any) {
   const [pubkey, setPubkey] = createSignal("");
   const [secArray, setSecArray] = createSignal<Uint8Array | undefined>();
   const [publishEvent, setPublishEvent] = createSignal<NostrEvent | null>(null);
   const [publishModalOpen, setPublishModalOpen] = createSignal(false);
-  const [nowProgress, setNowProgress] = createSignal(false);
   const [apiRelays, setApiRelays] = createSignal<string[]>([]);
   const [userRelays, setUserRelays] = createStore<RelayList>({
     read: [],
@@ -42,16 +47,6 @@ export function Content(): JSXElement {
     kind10003: [],
     kind30003: {},
     kind30001: {},
-  });
-
-  const [toastOpen, setToastOpen] = createSignal<boolean>();
-
-  const [toastState, setToastState] = createSignal<{
-    message: string;
-    type: "success" | "info" | "warning" | "error";
-  }>({
-    message: "",
-    type: "info",
   });
 
   const [optionValue, setOptionValue] = createSignal<number>(0);
@@ -244,9 +239,6 @@ export function Content(): JSXElement {
     setPublishModalOpen(false);
   };
 
-  const handleToastClose = () => {
-    setToastOpen(false);
-  };
   const optionHandleChange = (e: Event) => {
     setOptionValue(parseInt((e.target as HTMLInputElement).value));
 
@@ -272,27 +264,11 @@ export function Content(): JSXElement {
           bookmarks={bkmEvents}
           handleClickPublish={handleClickPublish}
         />
-
-        {/* <SelectedContent selectedEvent={selectedEvent} /> */}
       </Container>
       <PublishModal
         nosEvent={publishEvent}
         modalOpen={publishModalOpen}
         handleModalClose={handlePublishModalClose}
-      />
-
-      <Show when={nowProgress()}>
-        <CircularProgress
-          color="secondary"
-          sx={{ position: "fixed", bottom: 10, right: 10 }}
-          size={100}
-        />
-      </Show>
-      <Toast
-        timeout={5}
-        toastOpen={toastOpen}
-        handleToastClose={handleToastClose}
-        toastState={toastState}
       />
     </main>
   );

@@ -20,8 +20,14 @@ import {
   lightningIcon2,
   nostrIcon,
 } from "../libs/icons";
+import Form from "./Form";
 
-export function Footer() {
+export function Footer({
+  setToastState,
+  setToastOpen,
+  nowProgress,
+  setNowProgress,
+}: any) {
   const theme = useTheme();
 
   return (
@@ -31,6 +37,7 @@ export function Footer() {
         sx={{
           mt: 8,
           bgcolor: `${alpha(useTheme().palette.divider, 0.1)}`,
+          pb: 4,
         }}
       >
         <Divider />
@@ -159,8 +166,14 @@ export function Footer() {
             }}
           >
             nostr.watch
-          </IconButton> */}
+          </IconButton> */}{" "}
         </Box>
+        <Form
+          setToastOpen={setToastOpen}
+          setToastState={setToastState}
+          nowProgress={nowProgress}
+          setNowProgress={setNowProgress}
+        />
       </Container>
     </footer>
   );
