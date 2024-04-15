@@ -50,7 +50,10 @@ export default function Form({
 
         setNowProgress(true);
         try {
-          const result = await sendMessage(unwrap(message()));
+          const result = await sendMessage(
+            unwrap(message()),
+            process.env.VITE_FORMSEND_PUBHEX
+          );
           const hasSuccess = Array.from(result.values()).some(
             (isSuccess) => isSuccess
           );

@@ -425,20 +425,16 @@ export async function getOnlineRelays(): Promise<string[]> {
 }
 //vite  import.meta.env.VITE_FORMSEND_PUBHEX
 
-export async function sendMessage(message: string) {
-  if (process.env.VITE_FORMSEND_PUBHEX) {
+export async function sendMessage(message: string, pubhex: string) {
+  if (pubhex) {
     const sk = generateSecretKey();
     const pk = getPublicKey(sk);
-    const encryptedMessage = await encrypt(
-      sk,
-      process.env.VITE_FORMSEND_PUBHEX,
-      message
-    );
+    const encryptedMessage = await encrypt(sk, pubhex, message);
 
     const ev = {
       kind: 4,
       created_at: Math.floor(Date.now() / 1000),
-      tags: [["p", process.env.VITE_FORMSEND_PUBHEX]],
+      tags: [["p", pubhex]],
 
       content: encryptedMessage,
       pubkey: pk,
