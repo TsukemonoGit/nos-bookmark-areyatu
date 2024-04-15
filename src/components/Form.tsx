@@ -45,7 +45,10 @@ export default function Form({
   };
 
   const handleClose = async (bool: boolean) => {
-    if (bool && !nowProgress()) {
+    if (nowProgress()) {
+      return;
+    }
+    if (bool) {
       if (message().trim() !== "") {
         // ここでメッセージを送信する処理を行う
 
