@@ -51,11 +51,11 @@ export default function Form({
     if (bool) {
       if (message().trim() !== "") {
         // ここでメッセージを送信する処理を行う
-
+        const mes = "from\n" + name() + "\n\nmessage\n" + message();
         setNowProgress(true);
         try {
           if (sendpub) {
-            const result = await sendMessage(unwrap(message()), sendpub);
+            const result = await sendMessage(mes, sendpub);
             const hasSuccess = Array.from(result.values()).some(
               (isSuccess) => isSuccess
             );
