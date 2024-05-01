@@ -1,10 +1,4 @@
-import {
-  Box,
-  Theme,
-  FormControl,
-  RadioGroup,
-  Typography,
-} from "@suid/material";
+import { Box, Theme, FormControl, Typography } from "@suid/material";
 import { JSXElement } from "solid-js";
 interface BkmBoxProps {
   kind: string;

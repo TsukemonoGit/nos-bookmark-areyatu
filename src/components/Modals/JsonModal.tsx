@@ -6,9 +6,12 @@ import {
   Button,
   Link,
   Typography,
+  Stack,
 } from "@suid/material";
 import { EventPacket } from "rx-nostr";
 import { neventEncode } from "../../libs/nip19";
+import { Show } from "solid-js";
+import { FileDownload } from "@suid/icons-material";
 
 export default function JsonModal(props: {
   modalOpen: () => boolean;
@@ -31,6 +34,37 @@ export default function JsonModal(props: {
   console.log(url());
 
   const theme = useTheme();
+
+  // ダウンロードJSON
+  const handleClickDownloadJson = () => {
+    // ダウンロードするJSONデータの取得
+    const jsonData = JSON.stringify(props.nosEvent()?.event, null, 2);
+
+    // JSONデータをBlobオブジェクトに変換
+    const blob = new Blob([jsonData], { type: "application/json" });
+
+    // BlobオブジェクトからURLを生成
+    const url = URL.createObjectURL(blob);
+    const dtag = props
+      .nosEvent()
+      ?.event.tags.find((item) => item[0] === "d")?.[1];
+    // ダウンロード用のリンクを作成
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bookmarkRecovery_kind${props.nosEvent()?.event.kind}${
+      dtag ? `_${dtag}` : ""
+    }_${props.nosEvent()?.event.created_at}.json`; // ダウンロードファイルの名前を設定
+
+    // ダウンロードリンクのクリックイベントを発生させ、ファイルをダウンロード
+    document.body.appendChild(a);
+    a.click();
+
+    // ダウンロード用のリンクを削除
+    document.body.removeChild(a);
+
+    // Blobオブジェクトから生成したURLを解放
+    URL.revokeObjectURL(url);
+  };
   return (
     <Modal
       open={props.modalOpen()}
@@ -58,7 +92,7 @@ export default function JsonModal(props: {
         }}
       >
         <Grid container spacing={2} sx={{ height: "100%" }}>
-          <Grid item xs={12}>
+          <Grid item xs={8}>
             <Typography
               variant="h4"
               component="div"
@@ -66,6 +100,30 @@ export default function JsonModal(props: {
             >
               EventJson
             </Typography>
+          </Grid>
+          <Grid
+            item
+            xs={4}
+            sx={{
+              display: "flex",
+              height: "fit",
+              justifyContent: "end",
+            }}
+          >
+            <Stack
+              sx={{
+                justifyContent: "end",
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={handleClickDownloadJson}
+                color="primary"
+                sx={{ mb: 1 }}
+              >
+                Download Json <FileDownload />
+              </Button>
+            </Stack>
           </Grid>
           <Grid
             item
@@ -98,16 +156,19 @@ export default function JsonModal(props: {
               }}
             >
               <div>seen on: {props.nosEvent()?.from}</div>
-
-              <Link
-                href={url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                color="primary"
-                sx={{ textAlign: "end" }}
+              <Show
+                when={props.nosEvent() && props.nosEvent()?.from !== "Local"}
               >
-                Open in NostViewstr
-              </Link>
+                <Link
+                  href={url()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="primary"
+                  sx={{ textAlign: "end" }}
+                >
+                  Open in NostViewstr
+                </Link>
+              </Show>
             </Grid>
           </Grid>
         </Grid>

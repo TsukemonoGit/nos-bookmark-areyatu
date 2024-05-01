@@ -457,3 +457,16 @@ export async function sendMessage(message: string, pubhex: string) {
     throw Error;
   }
 }
+
+export const isNostrEvent = (obj: any): obj is NostrEvent => {
+  return (
+    typeof obj === "object" &&
+    typeof obj.created_at === "number" &&
+    typeof obj.content === "string" &&
+    Array.isArray(obj.tags) &&
+    typeof obj.kind === "number" &&
+    typeof obj.pubkey === "string" &&
+    typeof obj.id === "string" &&
+    typeof obj.sig === "string"
+  );
+};

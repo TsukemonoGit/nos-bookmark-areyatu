@@ -1,9 +1,8 @@
-import { Box, CircularProgress, Container, Divider } from "@suid/material";
+import { Container } from "@suid/material";
 import { createStore, unwrap } from "solid-js/store";
 import SetPubkey from "./SetPubkey";
 import Bookemarks from "./Bookmarks";
-import { JSXElement, Show, createSignal } from "solid-js";
-import SelectedContent from "./SelectedContent";
+import { createSignal } from "solid-js";
 import { NDKNip07Signer, NDKUser } from "@nostr-dev-kit/ndk";
 import {
   getUserRelayList,
@@ -20,7 +19,6 @@ import {
 //import bookmarkPackets from "../test/sortedBookmarksSocket.json"; // JSONファイルを読み込む
 import PublishModal from "./Modals/PublishModal";
 import { decode } from "../libs/nip19";
-import Toast from "./Modals/Toast";
 import OptionMenu from "./OptionMenu";
 import { extensionRelays } from "../libs/relays";
 import Form from "./Form";
@@ -258,6 +256,10 @@ export function Content({
           onChange={handleChange}
           onSubmit={handleSubmit}
           getPubkey={handleGetPubkey}
+          setBkmEvents={setBkmEvents}
+          bkmEvents={bkmEvents}
+          setToastState={setToastState}
+          setToastOpen={setToastOpen}
         />
 
         <Bookemarks

@@ -1,22 +1,18 @@
-import { JSXElement, Match, Show, Switch, createSignal } from "solid-js";
-import { BkmProps, BookmarkEventList } from "../libs/nostrFunctions";
+import { Match, Show, Switch, createSignal } from "solid-js";
+import { BookmarkEventList } from "../libs/nostrFunctions";
 import {
   Box,
   List,
   ListItem,
-  ListItemIcon,
-  ListSubheader,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
-  useTheme,
 } from "@suid/material";
 import Kind10003 from "./Kind10003";
 import Kind30001 from "./Kind30001";
 import Kind30003 from "./Kind30003";
 import JsonModal from "./Modals/JsonModal";
-import { NostrEvent } from "@nostr-dev-kit/ndk";
 import { EventPacket } from "rx-nostr";
 import BkmBox from "./BkmBox";
 import FiberManualRecordIcon from "@suid/icons-material/FiberManualRecord";
