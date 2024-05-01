@@ -194,13 +194,53 @@ export function Content({
   };
 
   const handlePublishModalClose = async (content: string | undefined) => {
+    //
+    setPublishModalOpen(false);
+    //
     console.log(content);
+
     if (nowProgress()) {
       return;
     }
     if (content === "publish") {
       setNowProgress(true);
+
       console.log(publishEvent());
+
+      //relayチェック
+      console.log(userRelays.write);
+      if (userRelays.write) {
+        try {
+          //-----------------------
+          const res: { npubkey: string; nsecArray?: Uint8Array | undefined } =
+            checkPubkey(pubkey());
+          console.log(res);
+          setPubkey(res.npubkey);
+          if (res.nsecArray) {
+            setSecArray(res.nsecArray);
+          }
+        } catch (error) {
+          setToastState({ message: "Check your public key", type: "error" });
+          setToastOpen(true);
+          setNowProgress(false);
+          return;
+        }
+        const userRelayList = await getUserRelayList(
+          decode(pubkey()).data as string
+        );
+        console.log(userRelayList);
+        setUserRelays(userRelayList);
+        if (userRelayList.read.length <= 0) {
+          setToastState({
+            message: "Failed to get your relays",
+            type: "error",
+          });
+          setToastOpen(true);
+          setNowProgress(false);
+          return;
+        }
+      }
+
       try {
         const res: Map<string, boolean> = await publishEventToRelay(
           unwrap(publishEvent() as NostrEvent),

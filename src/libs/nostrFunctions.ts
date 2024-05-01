@@ -383,7 +383,9 @@ export function checkPubkey(str: string): {
 } {
   console.log(str);
   let res: { npubkey: string; nsecArray?: Uint8Array } = { npubkey: "" };
-
+  if (!str || str.length < 60) {
+    throw Error;
+  }
   try {
     if (str.startsWith("nostr:")) {
       str = str.slice(6);
