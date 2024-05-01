@@ -198,7 +198,7 @@ export default function SetPubkey({
       </Stack>
 
       <Stack direction="row" spacing={2} sx={{ alignItems: "center", mt: 2 }}>
-        <Button variant="contained" onClick={onSubmit} sx={{ py: 2 }}>
+        <Button variant="contained" onClick={onSubmit}>
           <Search />
           Search Relays
         </Button>
@@ -212,7 +212,7 @@ export default function SetPubkey({
             style={{ display: "none" }}
             onChange={handleLoadJson}
           />
-          <Button variant="contained" component="span" sx={{ py: 2 }}>
+          <Button variant="contained" component="span">
             <FileUpload /> Upload Json File
           </Button>
         </label>
