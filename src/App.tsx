@@ -11,7 +11,7 @@ import { Content } from "./components/Content";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Show, createEffect, createMemo, createSignal } from "solid-js";
-import Head from "./components/Head";
+//import Head from "./components/Head";
 import Toast from "./components/Modals/Toast";
 
 export default function App() {
@@ -43,7 +43,7 @@ export default function App() {
 
   return (
     <>
-      <Head />
+      {/* <Head /> */}
       <ThemeProvider theme={theme()}>
         <Box
           sx={{
